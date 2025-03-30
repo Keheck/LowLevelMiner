@@ -44,4 +44,5 @@ It is by no means accurate, and will likely be expanded as I learn more. Some
 steps may even be broken down into smaller steps
 
 * [X] Hello Window: Get a window displayed
-* [ ] Hello Triangle: Display a triangle on screen
+* [X] Hello Triangle: Display a triangle on screen
+* [ ] Modify Build system to turn plain text shader code into C++ headers
