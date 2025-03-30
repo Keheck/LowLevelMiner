@@ -32,9 +32,9 @@ like Ubuntu:
 $ git clone http://github.com/Keheck/LowLevelMiner
 $ cd LowLevelMiner
 $ cmake --preset Linux-GCC-Debug
-$ cd out/build/Linux-GCC-Build
+$ cd out/build/Linux-GCC-Debug
 $ cmake --build .
-$ ./LowLevelBuild
+$ ./LowLevelMiner
 ```
 
 ## Development stage
