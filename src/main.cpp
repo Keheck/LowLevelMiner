@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "shader.h"
 #include "vertex/default.shader.h"
 #include "fragment/default.shader.h"
 
@@ -57,58 +58,7 @@ int main(int, char**){
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 
-    // ========================
-    // = CREATE VERTEX SHADER =
-    // ========================
-
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &_vertex_default_shader, NULL);
-    glCompileShader(vertexShader);
-    
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if(!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR: Vertex Shader compilation failed" << std::endl << infoLog << std::endl;
-    }
-
-    // ==========================
-    // = CREATE FRAGMENT SHADER =
-    // ==========================
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &_fragment_default_shader, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-    if(!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR: Fragment Shader compilation failed" << std::endl << infoLog << std::endl;
-    }
-
-    // ===================================
-    // = LINK VERTEX AND FRAGMENT SHADER =
-    // ===================================
-
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR: Shader linkage failed" << std::endl << infoLog << std::endl;
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    Shader *defaultShader = new Shader(&_vertex_default_shader, &_fragment_default_shader);
 
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
@@ -116,7 +66,7 @@ int main(int, char**){
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        defaultShader->use_shader();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -126,7 +76,7 @@ int main(int, char**){
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
+    delete defaultShader;
 
     glfwTerminate();
     return 0;
