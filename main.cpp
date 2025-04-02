@@ -1,6 +1,8 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "vertex/default.shader.h"
+#include "fragment/default.shader.h"
 
 void resize_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -11,19 +13,6 @@ void process_input(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, true);
     }
 }
-
-const char *vertexShaderDefault = 
-"#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
-
-const char *fragmentShaderDefault = 
-"#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main() { FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); }\0";
 
 int main(int, char**){
     glfwInit();
@@ -56,11 +45,9 @@ int main(int, char**){
          0.0f,  0.5f, 0.0f
     };
 
-    unsigned int VAO;
+    unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-
-    unsigned int VBO;
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -76,7 +63,7 @@ int main(int, char**){
 
     unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderDefault, NULL);
+    glShaderSource(vertexShader, 1, &_vertex_default_shader, NULL);
     glCompileShader(vertexShader);
     
     int success;
@@ -94,7 +81,7 @@ int main(int, char**){
 
     unsigned int fragmentShader;
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderDefault, NULL);
+    glShaderSource(fragmentShader, 1, &_fragment_default_shader, NULL);
     glCompileShader(fragmentShader);
 
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
@@ -122,10 +109,6 @@ int main(int, char**){
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
-    // glUseProgram(shaderProgram);
-
-
 
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
