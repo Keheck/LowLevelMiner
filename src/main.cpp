@@ -5,6 +5,12 @@
 #include "vertex/default.shader.h"
 #include "fragment/default.shader.h"
 
+#define TOP_LEFT (-0.5f, 0.5f, 0.0f)
+#define TOP_RIGHT (0.5f, 0.5f, 0.0f)
+#define BOTTOM_LEFT (-0.5f, -0.5f, 0.0f)
+#define BOTTOM_RIGHT (0.5f, -0.5f, 0.0f)
+
+
 void resize_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
@@ -40,20 +46,30 @@ int main(int, char**){
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
-    float vertices[] {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+    float triVerts[] {
+        -0.5f, -0.5f, 0.0f, // BOTTOM LEFT
+         0.5f, -0.5f, 0.0f, // BOTTOM RIGHT
+         0.5f,  0.5f, 0.0f, // TOP RIGHT
+        -0.5f,  0.5f, 0.0f  // TOP LEFT
+    };
+    unsigned int indices[] = {
+        0, 1, 2,
+        0, 3, 2
     };
 
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+    unsigned int RectEBO, RectVBO, RectVAO;
+    glGenBuffers(1, &RectEBO);
+    glGenVertexArrays(1, &RectVAO);
+    glGenBuffers(1, &RectVBO);
+    
+    glBindVertexArray(RectVAO);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, RectVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triVerts), triVerts, GL_STATIC_DRAW);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RectEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
@@ -67,15 +83,17 @@ int main(int, char**){
         glClear(GL_COLOR_BUFFER_BIT);
 
         defaultShader->use_shader();
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(RectVAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &RectVAO);
+    glDeleteBuffers(1, &RectVBO);
+    glDeleteBuffers(1, &RectEBO);
     delete defaultShader;
 
     glfwTerminate();
