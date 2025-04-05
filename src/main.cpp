@@ -5,7 +5,7 @@
 #include "shader.h"
 #include "vertex/default.shader.h"
 #include "fragment/default.shader.h"
-#include "fragment/yellow.shader.h"
+#include "stb_image.h"
 
 #define TOP_LEFT (-0.5f, 0.5f, 0.0f)
 #define TOP_RIGHT (0.5f, 0.5f, 0.0f)
@@ -30,6 +30,8 @@ int main(int, char**){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
+    stbi_set_flip_vertically_on_load(1);
+
     GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
 
     if(window == NULL) {
@@ -48,37 +50,81 @@ int main(int, char**){
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
-    float triVertData[] {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // BOTTOM LEFT
-         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // BOTTOM RIGHT
-         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // TOP
+    float vertexData[] {
+        // POSITION         // COLOR          // TEXTURE COORD
+         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // TOP RIGHT
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // BOTTOM RIGHT
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // TOP LEFT
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f  // BOTTOM LEFT
     };
 
-    // unsigned int EBO; 
-    unsigned int leftTriVBO, leftTriVAO;
-    // glGenBuffers(1, &EBO);
-    glGenVertexArrays(1, &leftTriVAO);
-    glGenBuffers(1, &leftTriVBO);
+    unsigned int indices[] {
+        0, 1, 2,
+        1, 3, 2
+    };
+
+    unsigned int VBO, VAO, EBO;
+    glGenBuffers(1, &EBO);
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
     
-    glBindVertexArray(leftTriVAO);
+    glBindVertexArray(VAO);
     
-    glBindBuffer(GL_ARRAY_BUFFER, leftTriVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triVertData), triVertData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+
     
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*6, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float)*6, (void*)(sizeof(float)*3));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*3));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*6));
+    glEnableVertexAttribArray(2);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    int width, height, nrChannels;
+    unsigned int container, face;
+    unsigned char *data;
+
+    glGenTextures(1, &container);
+    glGenTextures(1, &face);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, container);
+    
+    data = stbi_load("assets/textures/container.jpg", &width, &height, &nrChannels, 0);
+    if(data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cerr << "Failed to read texture file" << std::endl;
+    }
+    stbi_image_free(data);
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, face);
+    data = stbi_load("assets/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+    if(data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cerr << "Failed to read texture file" << std::endl;
+    }
+    stbi_image_free(data);
 
     Shader *defaultShader = new Shader(&_vertex_default_shader, &_fragment_default_shader);
 
     defaultShader->use_shader();
+    glUniform1i(defaultShader->getUniformLocation("tex"), 0);
+    glUniform1i(defaultShader->getUniformLocation("face"), 1);
 
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
@@ -86,17 +132,16 @@ int main(int, char**){
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBindVertexArray(leftTriVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &leftTriVAO);
-    glDeleteBuffers(1, &leftTriVBO);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
     delete defaultShader;
 
     glfwTerminate();
