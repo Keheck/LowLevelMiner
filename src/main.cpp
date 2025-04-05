@@ -6,6 +6,7 @@
 #include "vertex/default.shader.h"
 #include "fragment/default.shader.h"
 #include "stb_image.h"
+#include "texture.h"
 
 #define TOP_LEFT (-0.5f, 0.5f, 0.0f)
 #define TOP_RIGHT (0.5f, 0.5f, 0.0f)
@@ -88,43 +89,17 @@ int main(int, char**){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    int width, height, nrChannels;
-    unsigned int container, face;
-    unsigned char *data;
+    // Texture container("assets/textures/container.jpg");
+    // Texture face("assets/textures/awesomeface.png");
+    Texture missing("assetss/missing.png");
 
-    glGenTextures(1, &container);
-    glGenTextures(1, &face);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, container);
-    
-    data = stbi_load("assets/textures/container.jpg", &width, &height, &nrChannels, 0);
-    if(data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else {
-        std::cerr << "Failed to read texture file" << std::endl;
-    }
-    stbi_image_free(data);
-    
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, face);
-    data = stbi_load("assets/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-    if(data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else {
-        std::cerr << "Failed to read texture file" << std::endl;
-    }
-    stbi_image_free(data);
+    missing.occupyUnit(GL_TEXTURE0);
 
     Shader *defaultShader = new Shader(&_vertex_default_shader, &_fragment_default_shader);
 
     defaultShader->use_shader();
-    glUniform1i(defaultShader->getUniformLocation("tex"), 0);
-    glUniform1i(defaultShader->getUniformLocation("face"), 1);
+    // glUniform1i(defaultShader->getUniformLocation("tex"), 0);
+    // glUniform1i(defaultShader->getUniformLocation("face"), 1);
 
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
