@@ -1,6 +1,5 @@
 #include "shader.h"
 #include <stdexcept>
-#include <glad/glad.h>
 #include <iostream>
 
 static void log_shader_state(unsigned int shaderID) {
