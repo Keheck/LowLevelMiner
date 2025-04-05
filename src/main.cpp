@@ -4,6 +4,7 @@
 #include "shader.h"
 #include "vertex/default.shader.h"
 #include "fragment/default.shader.h"
+#include "fragment/yellow.shader.h"
 
 #define TOP_LEFT (-0.5f, 0.5f, 0.0f)
 #define TOP_RIGHT (0.5f, 0.5f, 0.0f)
@@ -46,35 +47,55 @@ int main(int, char**){
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
-    float triVerts[] {
-        -0.5f, -0.5f, 0.0f, // BOTTOM LEFT
-         0.5f, -0.5f, 0.0f, // BOTTOM RIGHT
-         0.5f,  0.5f, 0.0f, // TOP RIGHT
-        -0.5f,  0.5f, 0.0f  // TOP LEFT
+    float leftTriVerts[] {
+        -1.0f, -0.5f, 0.0f,
+         0.0f, -0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f,
     };
-    unsigned int indices[] = {
-        0, 1, 2,
-        0, 3, 2
+    float rightTriVerts[] {
+         0.0f, -0.5f, 0.0f,
+         1.0f, -0.5f, 0.0f,
+         0.5f,  0.5f, 0.0f,
     };
 
-    unsigned int RectEBO, RectVBO, RectVAO;
-    glGenBuffers(1, &RectEBO);
-    glGenVertexArrays(1, &RectVAO);
-    glGenBuffers(1, &RectVBO);
+    // unsigned int EBO; 
+    unsigned int leftTriVBO, leftTriVAO;
+    // glGenBuffers(1, &EBO);
+    glGenVertexArrays(1, &leftTriVAO);
+    glGenBuffers(1, &leftTriVBO);
     
-    glBindVertexArray(RectVAO);
+    glBindVertexArray(leftTriVAO);
     
-    glBindBuffer(GL_ARRAY_BUFFER, RectVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triVerts), triVerts, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, leftTriVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(leftTriVerts), leftTriVerts, GL_STATIC_DRAW);
     
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RectEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void*)0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    unsigned int rightTriVBO, rightTriVAO;
+    glGenVertexArrays(1, &rightTriVAO);
+    glGenBuffers(1, &rightTriVBO);
+
+    glBindVertexArray(rightTriVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, rightTriVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rightTriVerts), rightTriVerts, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 
     Shader *defaultShader = new Shader(&_vertex_default_shader, &_fragment_default_shader);
+    Shader *yellowShader = new Shader(&_vertex_default_shader, &_fragment_yellow_shader);
+
+    int result;
 
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
@@ -83,18 +104,25 @@ int main(int, char**){
         glClear(GL_COLOR_BUFFER_BIT);
 
         defaultShader->use_shader();
-        glBindVertexArray(RectVAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        glBindVertexArray(leftTriVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
+        yellowShader->use_shader();
+        glBindVertexArray(rightTriVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glBindVertexArray(0);
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &RectVAO);
-    glDeleteBuffers(1, &RectVBO);
-    glDeleteBuffers(1, &RectEBO);
+    glDeleteVertexArrays(1, &leftTriVAO);
+    glDeleteBuffers(1, &leftTriVBO);
+    glDeleteVertexArrays(1, &rightTriVAO);
+    glDeleteBuffers(1, &rightTriVBO);
     delete defaultShader;
+    delete yellowShader;
 
     glfwTerminate();
     return 0;

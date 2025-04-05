@@ -1,6 +1,7 @@
 set(SHADER_SOURCES
     fragment/default.shader
     vertex/default.shader
+    fragment/yellow.shader
 )
 
 set(SHADER_HEADERS "")
