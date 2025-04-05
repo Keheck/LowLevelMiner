@@ -48,15 +48,10 @@ int main(int, char**){
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
-    float leftTriVerts[] {
-        -1.0f, -0.5f, 0.0f,
-         0.0f, -0.5f, 0.0f,
-        -0.5f,  0.5f, 0.0f,
-    };
-    float rightTriVerts[] {
-         0.0f, -0.5f, 0.0f,
-         1.0f, -0.5f, 0.0f,
-         0.5f,  0.5f, 0.0f,
+    float triVertData[] {
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // BOTTOM LEFT
+         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // BOTTOM RIGHT
+         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // TOP
     };
 
     // unsigned int EBO; 
@@ -68,27 +63,15 @@ int main(int, char**){
     glBindVertexArray(leftTriVAO);
     
     glBindBuffer(GL_ARRAY_BUFFER, leftTriVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(leftTriVerts), leftTriVerts, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triVertData), triVertData, GL_STATIC_DRAW);
     
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*6, (void*)0);
     glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    unsigned int rightTriVBO, rightTriVAO;
-    glGenVertexArrays(1, &rightTriVAO);
-    glGenBuffers(1, &rightTriVBO);
-
-    glBindVertexArray(rightTriVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, rightTriVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rightTriVerts), rightTriVerts, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void*)0);
-    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float)*6, (void*)(sizeof(float)*3));
+    glEnableVertexAttribArray(1);
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -101,18 +84,14 @@ int main(int, char**){
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
 
-        float time = glfwGetTime();
-        float green = (sin(time) / 2.0f) + 0.5f;
-        std::cout << "Green value: " << green << std::endl;
-        glUniform4f(defaultShader->getUniformLocation("customColor"), 0.0f, green, 0.0f, 1.0f);
+        // float time = glfwGetTime();
+        // float green = (sin(time) / 2.0f) + 0.5f;
+        // glUniform4f(defaultShader->getUniformLocation("customColor"), 0.0f, green, 0.0f, 1.0f);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glBindVertexArray(leftTriVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        glBindVertexArray(rightTriVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glBindVertexArray(0);
@@ -123,8 +102,6 @@ int main(int, char**){
 
     glDeleteVertexArrays(1, &leftTriVAO);
     glDeleteBuffers(1, &leftTriVBO);
-    glDeleteVertexArrays(1, &rightTriVAO);
-    glDeleteBuffers(1, &rightTriVBO);
     delete defaultShader;
     // delete yellowShader;
 
