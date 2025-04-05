@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "vertex/default.shader.h"
 #include "fragment/default.shader.h"
+#include "fragment/mix.shader.h"
 #include "stb_image.h"
 #include "texture.h"
 
@@ -89,17 +90,17 @@ int main(int, char**){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    // Texture container("assets/textures/container.jpg");
-    // Texture face("assets/textures/awesomeface.png");
-    Texture missing("assetss/missing.png");
+    Texture container("assets/textures/container.jpg");
+    Texture face("assets/textures/awesomeface.png");
 
-    missing.occupyUnit(GL_TEXTURE0);
+    container.occupyUnit(GL_TEXTURE0);
+    face.occupyUnit(GL_TEXTURE1);
 
-    Shader *defaultShader = new Shader(&_vertex_default_shader, &_fragment_default_shader);
+    Shader *defaultShader = new Shader(&_vertex_default_shader, &_fragment_mix_shader);
 
     defaultShader->use_shader();
-    // glUniform1i(defaultShader->getUniformLocation("tex"), 0);
-    // glUniform1i(defaultShader->getUniformLocation("face"), 1);
+    glUniform1i(defaultShader->getUniformLocation("tex"), 0);
+    glUniform1i(defaultShader->getUniformLocation("face"), 1);
 
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
