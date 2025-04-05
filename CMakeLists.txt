@@ -5,6 +5,7 @@ find_library(GLFW_LIB glfw)
 
 add_subdirectory(glad)
 add_subdirectory(shader)
+add_subdirectory(assets)
 
 add_executable(LowLevelMiner
     src/main.cpp
