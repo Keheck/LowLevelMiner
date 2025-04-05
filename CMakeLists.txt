@@ -9,7 +9,6 @@ add_subdirectory(shader)
 add_executable(LowLevelMiner
     src/main.cpp
     src/shader.cpp
-    ${SHADER_HEADERS}
 )
 
 target_include_directories(LowLevelMiner PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/shader)
