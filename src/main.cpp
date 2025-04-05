@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader.h"
@@ -93,21 +94,24 @@ int main(int, char**){
 
 
     Shader *defaultShader = new Shader(&_vertex_default_shader, &_fragment_default_shader);
-    Shader *yellowShader = new Shader(&_vertex_default_shader, &_fragment_yellow_shader);
+    // Shader *yellowShader = new Shader(&_vertex_default_shader, &_fragment_yellow_shader);
 
-    int result;
+    defaultShader->use_shader();
 
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
 
+        float time = glfwGetTime();
+        float green = (sin(time) / 2.0f) + 0.5f;
+        std::cout << "Green value: " << green << std::endl;
+        glUniform4f(defaultShader->getUniformLocation("customColor"), 0.0f, green, 0.0f, 1.0f);
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        defaultShader->use_shader();
         glBindVertexArray(leftTriVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        yellowShader->use_shader();
         glBindVertexArray(rightTriVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -122,7 +126,7 @@ int main(int, char**){
     glDeleteVertexArrays(1, &rightTriVAO);
     glDeleteBuffers(1, &rightTriVBO);
     delete defaultShader;
-    delete yellowShader;
+    // delete yellowShader;
 
     glfwTerminate();
     return 0;

@@ -10,6 +10,7 @@ class Shader {
         ~Shader();
         // void add_shader_stage(char **shader, unsigned int stage);
         void use_shader();
+        int getUniformLocation(const char* uniformName);
     private:
         unsigned int programID;
 
