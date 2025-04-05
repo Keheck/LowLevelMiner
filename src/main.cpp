@@ -53,11 +53,11 @@ int main(int, char**){
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
     float vertexData[] {
-        // POSITION         // COLOR          // TEXTURE COORD
-         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // TOP RIGHT
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // BOTTOM RIGHT
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // TOP LEFT
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f  // BOTTOM LEFT
+        // POSITION         // TEXTURE COORD
+         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // TOP RIGHT
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // BOTTOM RIGHT
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, // TOP LEFT
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f  // BOTTOM LEFT
     };
 
     unsigned int indices[] {
@@ -76,12 +76,10 @@ int main(int, char**){
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
     
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*5, (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*3));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float)*5, (void*)(sizeof(float)*3));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*6));
-    glEnableVertexAttribArray(2);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
