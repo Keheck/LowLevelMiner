@@ -13,7 +13,10 @@ add_executable(LowLevelMiner
     src/shader.cpp
     src/stb_image.cpp
     src/texture.cpp
+    src/render_object.cpp
 )
+
+target_compile_features(LowLevelMiner PUBLIC cxx_std_11)
 
 target_include_directories(LowLevelMiner PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/shader)
 target_include_directories(LowLevelMiner PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

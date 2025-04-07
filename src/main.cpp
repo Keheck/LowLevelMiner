@@ -12,6 +12,7 @@
 #include "fragment/mix.shader.h"
 #include "stb_image.h"
 #include "texture.h"
+#include "render_object.h"
 
 #define TOP_LEFT (-0.5f, 0.5f, 0.0f)
 #define TOP_RIGHT (0.5f, 0.5f, 0.0f)
@@ -57,7 +58,7 @@ int main(int, char**){
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
     
-    float vertexData[] {
+    std::vector<float> vertexData = {
         // POSITION         // TEXTURE COORD
          0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // TOP RIGHT
          0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // BOTTOM RIGHT
@@ -65,33 +66,13 @@ int main(int, char**){
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f  // BOTTOM LEFT
     };
     
-    unsigned int indices[] {
+    std::vector<int> indices = {
         0, 1, 2,
         1, 3, 2
     };
-    
-    unsigned int VBO, VAO, EBO;
-    glGenBuffers(1, &EBO);
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    
-    glBindVertexArray(VAO);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-    
-    
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*5, (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float)*5, (void*)(sizeof(float)*3));
-    glEnableVertexAttribArray(1);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    RenderObject obj = RenderObject(vertexData, indices);
+    obj.setVertexData(2, POS_AND_UV);
     
     Texture container("assets/textures/container.jpg");
     Texture face("assets/textures/awesomeface.png");
@@ -117,7 +98,8 @@ int main(int, char**){
         trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
         glUniformMatrix4fv(defaultShader->getUniformLocation("transform"), 1, GL_FALSE, glm::value_ptr(trans));
         
-        glBindVertexArray(VAO);
+        // glBindVertexArray(VAO);
+        obj.bindArray();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
         
@@ -125,8 +107,9 @@ int main(int, char**){
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    // glDeleteVertexArrays(1, &VAO);
+    // glDeleteBuffers(1, &VBO);
+    obj.cleanup();
     delete defaultShader;
 
     glfwTerminate();
