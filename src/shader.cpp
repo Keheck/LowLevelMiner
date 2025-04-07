@@ -96,8 +96,13 @@ Shader::Shader(const char **vertex_shader_source, const char **fragment_shader_s
     return;
 }
 
+void Shader::cleanup() {
+    if(this->programID) (this->programID);
+    this->programID = 0;
+}
+
 Shader::~Shader() {
-    glDeleteProgram(this->programID);
+    this->cleanup();
 }
 
 void Shader::use_shader() {

@@ -80,11 +80,11 @@ int main(int, char**){
     container.occupyUnit(GL_TEXTURE0);
     face.occupyUnit(GL_TEXTURE1);
     
-    Shader *defaultShader = new Shader(&_vertex_default_shader, &_fragment_mix_shader);
+    Shader defaultShader = Shader(&_vertex_default_shader, &_fragment_mix_shader);
     
-    defaultShader->use_shader();
-    glUniform1i(defaultShader->getUniformLocation("tex"), 0);
-    glUniform1i(defaultShader->getUniformLocation("face"), 1);
+    defaultShader.use_shader();
+    glUniform1i(defaultShader.getUniformLocation("tex"), 0);
+    glUniform1i(defaultShader.getUniformLocation("face"), 1);
     
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
@@ -96,7 +96,7 @@ int main(int, char**){
         glm::mat4 trans = glm::mat4(1.0f);
         trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
         trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
-        glUniformMatrix4fv(defaultShader->getUniformLocation("transform"), 1, GL_FALSE, glm::value_ptr(trans));
+        glUniformMatrix4fv(defaultShader.getUniformLocation("transform"), 1, GL_FALSE, glm::value_ptr(trans));
         
         // glBindVertexArray(VAO);
         obj.bindArray();
@@ -110,7 +110,7 @@ int main(int, char**){
     // glDeleteVertexArrays(1, &VAO);
     // glDeleteBuffers(1, &VBO);
     obj.cleanup();
-    delete defaultShader;
+    defaultShader.cleanup();
 
     glfwTerminate();
     return 0;
