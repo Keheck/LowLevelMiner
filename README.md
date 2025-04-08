@@ -46,6 +46,6 @@ steps may even be broken down into smaller steps
 * [X] Hello Window: Get a window displayed
 * [X] Hello Triangle: Display a triangle on screen
 * [X] Modify Build system to turn plain text shader code into C++ headers
-* [ ] Get Textures working (replaces the triangle with a rectangle)
-* [ ] Learn about transformations
+* [X] Get Textures working (replaces the triangle with a rectangle)
+* [X] Learn about transformations
 * [ ] Set up a rudimentary camera system
