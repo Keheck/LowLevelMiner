@@ -14,11 +14,6 @@
 #include "texture.h"
 #include "render_object.h"
 
-#define TOP_LEFT (-0.5f, 0.5f, 0.0f)
-#define TOP_RIGHT (0.5f, 0.5f, 0.0f)
-#define BOTTOM_LEFT (-0.5f, -0.5f, 0.0f)
-#define BOTTOM_RIGHT (0.5f, -0.5f, 0.0f)
-
 
 void resize_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -30,6 +25,9 @@ void process_input(GLFWwindow *window) {
     }
 }
 
+constexpr int WIDTH = 800;
+constexpr int HEIGHT = 600;
+
 int main(int, char**){
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -39,7 +37,7 @@ int main(int, char**){
 
     stbi_set_flip_vertically_on_load(1);
 
-    GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
 
     if(window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -54,25 +52,74 @@ int main(int, char**){
         return -1;
     }
 
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, WIDTH, HEIGHT);
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
     
     std::vector<float> vertexData = {
-        // POSITION         // TEXTURE COORD
-         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // TOP RIGHT
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // BOTTOM RIGHT
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, // TOP LEFT
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f  // BOTTOM LEFT
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
     
     std::vector<int> indices = {
-        0, 1, 2,
-        1, 3, 2
+        0, 1, 3,
+        1, 2, 3
     };
 
-    RenderObject obj = RenderObject(vertexData, indices);
-    obj.setVertexData(2, POS_AND_UV);
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f), 
+        glm::vec3( 2.0f,  5.0f, -15.0f), 
+        glm::vec3(-1.5f, -2.2f, -2.5f),  
+        glm::vec3(-3.8f, -2.0f, -12.3f),  
+        glm::vec3( 2.4f, -0.4f, -3.5f),  
+        glm::vec3(-1.7f,  3.0f, -7.5f),  
+        glm::vec3( 1.3f, -2.0f, -2.5f),  
+        glm::vec3( 1.5f,  2.0f, -2.5f), 
+        glm::vec3( 1.5f,  0.2f, -1.5f), 
+        glm::vec3(-1.3f,  1.0f, -1.5f)  
+    };
+
+    RenderObject rectLowRight = RenderObject(vertexData, indices);
+    rectLowRight.setVertexData(2, POS_AND_UV);
     
     Texture container("assets/textures/container.jpg");
     Texture face("assets/textures/awesomeface.png");
@@ -83,33 +130,45 @@ int main(int, char**){
     Shader defaultShader = Shader(&_vertex_default_shader, &_fragment_mix_shader);
     
     defaultShader.use_shader();
-    glUniform1i(defaultShader.getUniformLocation("tex"), 0);
-    glUniform1i(defaultShader.getUniformLocation("face"), 1);
+    defaultShader.setInt("tex", 0);
+    defaultShader.setInt("face", 1);
+
+    glEnable(GL_DEPTH_TEST);
     
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
         
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         
-        glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
-        glUniformMatrix4fv(defaultShader.getUniformLocation("transform"), 1, GL_FALSE, glm::value_ptr(trans));
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
         
-        // glBindVertexArray(VAO);
-        obj.bindArray();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        rectLowRight.bindArray();
+
+        defaultShader.setMat4f("projection", projection);
+        defaultShader.setMat4f("view", view);
+        
+        for(unsigned int i = 0; i < sizeof(cubePositions)/sizeof(cubePositions[0]); i++) {
+            glm::vec3 position = cubePositions[i];
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, position);
+
+            float angle = 20.0f * i;
+            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+            defaultShader.setMat4f("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
         glBindVertexArray(0);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // glDeleteVertexArrays(1, &VAO);
-    // glDeleteBuffers(1, &VBO);
-    obj.cleanup();
+    rectLowRight.cleanup();
     defaultShader.cleanup();
 
     glfwTerminate();
