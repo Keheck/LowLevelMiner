@@ -16,6 +16,7 @@
 #include "render_object.h"
 #include "camera.h"
 
+double lastTime, deltaTime;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), 0.0f, 0.0f);
 
@@ -33,9 +34,9 @@ void mouse_callback(GLFWwindow *window, double xPos, double yPos) {
     lastX = xPos;
     lastY = yPos;
 
-    const float sensitivity = 0.1f;
-    dX *= sensitivity;
-    dY *= sensitivity;
+    const float sensitivity = 9.0f;
+    dX *= sensitivity * deltaTime;
+    dY *= sensitivity * deltaTime;
 
     camera.rotate(dX, dY);
 }
@@ -44,18 +45,18 @@ void process_input(GLFWwindow *window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
-    const float cameraSpeed = 0.05f; // adjust accordingly
+    const float cameraSpeed = 3.0f; // adjust accordingly
 
     glm::vec3 direction(0.0f, 0.0f, 0.0f);
 
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        direction.z = -cameraSpeed;
+        direction.z = -cameraSpeed * deltaTime;
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        direction.z = cameraSpeed;
+        direction.z = cameraSpeed * deltaTime;
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        direction.x = -cameraSpeed;
+        direction.x = -cameraSpeed * deltaTime;
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        direction.x = cameraSpeed;
+        direction.x = cameraSpeed * deltaTime;
     
     camera.walk(direction);
 }
@@ -176,6 +177,9 @@ int main(int, char**){
     glm::vec3 direction;
     
     while(!glfwWindowShouldClose(window)) {
+        deltaTime = glfwGetTime() - lastTime;
+        lastTime = glfwGetTime();
+
         process_input(window);
         
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -205,6 +209,7 @@ int main(int, char**){
         
         glfwSwapBuffers(window);
         glfwPollEvents();
+
     }
 
     rectLowRight.cleanup();
