@@ -17,7 +17,7 @@
 #include "camera.h"
 
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), -90.0f, 0.0f);
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), 0.0f, 0.0f);
 
 void resize_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -49,9 +49,9 @@ void process_input(GLFWwindow *window) {
     glm::vec3 direction(0.0f, 0.0f, 0.0f);
 
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        direction.z = cameraSpeed;
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         direction.z = -cameraSpeed;
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        direction.z = cameraSpeed;
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         direction.x = -cameraSpeed;
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
