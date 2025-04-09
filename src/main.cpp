@@ -2,6 +2,7 @@
 #include <cmath>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -13,17 +14,52 @@
 #include "stb_image.h"
 #include "texture.h"
 #include "render_object.h"
+#include "camera.h"
 
+
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), -90.0f, 0.0f);
 
 void resize_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
+}
+
+
+void mouse_callback(GLFWwindow *window, double xPos, double yPos) {
+    static float lastX = 400;
+    static float lastY = 300;
+
+    float dX = xPos - lastX;
+    float dY = lastY - yPos;
+    lastX = xPos;
+    lastY = yPos;
+
+    const float sensitivity = 0.1f;
+    dX *= sensitivity;
+    dY *= sensitivity;
+
+    camera.rotate(dX, dY);
 }
 
 void process_input(GLFWwindow *window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
+    const float cameraSpeed = 0.05f; // adjust accordingly
+
+    glm::vec3 direction(0.0f, 0.0f, 0.0f);
+
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        direction.z = cameraSpeed;
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        direction.z = -cameraSpeed;
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        direction.x = -cameraSpeed;
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        direction.x = cameraSpeed;
+    
+    camera.moveLocal(direction);
 }
+
 
 constexpr int WIDTH = 800;
 constexpr int HEIGHT = 600;
@@ -54,7 +90,8 @@ int main(int, char**){
 
     glViewport(0, 0, WIDTH, HEIGHT);
     glfwSetFramebufferSizeCallback(window, resize_callback);
-
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     std::vector<float> vertexData = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -106,16 +143,16 @@ int main(int, char**){
     };
 
     glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f), 
-        glm::vec3( 2.0f,  5.0f, -15.0f), 
-        glm::vec3(-1.5f, -2.2f, -2.5f),  
-        glm::vec3(-3.8f, -2.0f, -12.3f),  
-        glm::vec3( 2.4f, -0.4f, -3.5f),  
-        glm::vec3(-1.7f,  3.0f, -7.5f),  
-        glm::vec3( 1.3f, -2.0f, -2.5f),  
-        glm::vec3( 1.5f,  2.0f, -2.5f), 
-        glm::vec3( 1.5f,  0.2f, -1.5f), 
-        glm::vec3(-1.3f,  1.0f, -1.5f)  
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
     RenderObject rectLowRight = RenderObject(vertexData, indices);
@@ -134,15 +171,17 @@ int main(int, char**){
     defaultShader.setInt("face", 1);
 
     glEnable(GL_DEPTH_TEST);
+    const float radius = 10.0f;
+
+    glm::vec3 direction;
     
     while(!glfwWindowShouldClose(window)) {
         process_input(window);
         
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+
+        glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
         
         rectLowRight.bindArray();

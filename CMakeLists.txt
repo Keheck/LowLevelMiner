@@ -14,6 +14,7 @@ add_executable(LowLevelMiner
     src/stb_image.cpp
     src/texture.cpp
     src/render_object.cpp
+    src/camera.cpp
 )
 
 target_compile_features(LowLevelMiner PUBLIC cxx_std_11)
