@@ -14,13 +14,21 @@ glm::mat4 Camera::getViewMatrix() {
     return glm::lookAt(this->position, this->position + this->forward, this->up);
 }
 
-void Camera::moveLocal(glm::vec3 direction) {
-    if(direction.length() < FLT_EPSILON)
+void Camera::flyLocal(glm::vec3 direction) {
+    if(glm::length(direction) < FLT_EPSILON) return;
 
-    direction = glm::normalize(direction);
     this->position += this->right * direction.x;
     this->position += this->up * direction.y;
     this->position += this->forward * direction.z;
+}
+
+void Camera::walk(glm::vec3 direction) {
+    if(glm::length(direction) < FLT_EPSILON) return;
+    
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(this->yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::vec3 rotatedDirection = rotation * glm::vec4(direction, 1.0f);
+
+    this->position += rotatedDirection;
 }
 
 void Camera::rotate(float dYaw, float dPitch) {

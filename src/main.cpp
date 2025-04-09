@@ -57,7 +57,7 @@ void process_input(GLFWwindow *window) {
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         direction.x = cameraSpeed;
     
-    camera.moveLocal(direction);
+    camera.walk(direction);
 }
 
 
