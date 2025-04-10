@@ -94,7 +94,7 @@ int main(int, char**){
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
-    std::vector<float> vertexData = {
+    std::vector<float> cubeVertices = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
          0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -137,7 +137,7 @@ int main(int, char**){
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
-    
+
     std::vector<int> indices = {
         0, 1, 3,
         1, 2, 3
@@ -156,8 +156,8 @@ int main(int, char**){
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
-    RenderObject rectLowRight = RenderObject(vertexData, indices);
-    rectLowRight.setVertexData(2, POS_AND_UV);
+    RenderObject cube = RenderObject(cubeVertices, indices);
+    cube.setVertexData(2, POS_AND_UV);
     
     Texture container("assets/textures/container.jpg");
     Texture face("assets/textures/awesomeface.png");
@@ -188,7 +188,7 @@ int main(int, char**){
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
         
-        rectLowRight.bindArray();
+        cube.bindArray();
 
         defaultShader.setMat4f("projection", projection);
         defaultShader.setMat4f("view", view);
@@ -209,10 +209,9 @@ int main(int, char**){
         
         glfwSwapBuffers(window);
         glfwPollEvents();
-
     }
 
-    rectLowRight.cleanup();
+    cube.cleanup();
     defaultShader.cleanup();
 
     glfwTerminate();
