@@ -1,7 +1,7 @@
-#include "render_object.h"
+#include "mesh.h"
 #include <stdarg.h>
 
-RenderObject::RenderObject(std::vector<float> &vertexData, std::vector<int> &indices) {
+Mesh::Mesh(std::vector<float> &vertexData, std::vector<int> &indices) {
     glGenVertexArrays(1, &(this->VAO));
     glGenBuffers(1, &(this->VBO));
     glGenBuffers(1, &(this->EBO));
@@ -18,11 +18,11 @@ RenderObject::RenderObject(std::vector<float> &vertexData, std::vector<int> &ind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void RenderObject::bindArray() {
+void Mesh::bindArray() {
     glBindVertexArray(this->VAO);
 }
 
-void RenderObject::setVertexData(int count, const VertexDataDescriptor* descriptors) {
+void Mesh::setVertexData(int count, const VertexDataDescriptor* descriptors) {
     int totalSize = 0;
     for(int i = 0; i < count; i++)
         totalSize += descriptors[i].numElements * descriptors[i].elementSize;
@@ -41,11 +41,11 @@ void RenderObject::setVertexData(int count, const VertexDataDescriptor* descript
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-RenderObject::~RenderObject() {
+Mesh::~Mesh() {
     cleanup();
 }
 
-void RenderObject::cleanup() {
+void Mesh::cleanup() {
     if(this->VAO) glDeleteVertexArrays(1, &(this->VAO));
     if(this->EBO) glDeleteBuffers(1, &(this->EBO));
     if(this->VBO) glDeleteBuffers(1, &(this->VBO));

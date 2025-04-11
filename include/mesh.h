@@ -3,13 +3,13 @@
 #include <vector>
 #include <glad/glad.h>
 
-class RenderObject;
+class Mesh;
 struct VertexDataDescriptor;
 
-class RenderObject {
+class Mesh {
     public:
-        RenderObject(std::vector<float> &data, std::vector<int> &indices);
-        ~RenderObject();
+        Mesh(std::vector<float> &data, std::vector<int> &indices);
+        ~Mesh();
         void cleanup();
         void bindArray();
         void setVertexData(int count, const VertexDataDescriptor *descriptors);

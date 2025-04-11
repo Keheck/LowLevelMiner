@@ -13,7 +13,7 @@
 #include "fragment/mix.shader.h"
 #include "stb_image.h"
 #include "texture.h"
-#include "render_object.h"
+#include "mesh.h"
 #include "camera.h"
 
 double lastTime, deltaTime;
@@ -156,7 +156,7 @@ int main(int, char**){
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
-    RenderObject cube = RenderObject(cubeVertices, indices);
+    Mesh cube = Mesh(cubeVertices, indices);
     cube.setVertexData(2, POS_AND_UV);
     
     Texture container("assets/textures/container.jpg");

@@ -13,7 +13,7 @@ add_executable(LowLevelMiner
     src/shader.cpp
     src/stb_image.cpp
     src/texture.cpp
-    src/render_object.cpp
+    src/mesh.cpp
     src/camera.cpp
 )
 
