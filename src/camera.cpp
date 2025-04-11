@@ -19,7 +19,7 @@ void Camera::flyLocal(glm::vec3 direction) {
 
     this->position += this->right * direction.x;
     this->position += this->up * direction.y;
-    this->position += this->forward * direction.z;
+    this->position += this->forward * -direction.z;
 }
 
 void Camera::walk(glm::vec3 direction) {
