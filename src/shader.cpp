@@ -118,32 +118,32 @@ void Shader::setInt(const char *location, int value) {
     glUniform1i(glGetUniformLocation(this->programID, location), value);
 }
 
-void Shader::setVec2i(const char *location, int *vec) {
-    glUniform2i(glGetUniformLocation(this->programID, location), vec[0], vec[1]);
+void Shader::setVec2i(const char *location, int x, int y) {
+    glUniform2i(glGetUniformLocation(this->programID, location), x, y);
 }
 
-void Shader::setVec3i(const char *location, int *vec) {
-    glUniform3i(glGetUniformLocation(this->programID, location), vec[0], vec[1], vec[2]);
+void Shader::setVec3i(const char *location, int x, int y, int z) {
+    glUniform3i(glGetUniformLocation(this->programID, location), x, y, z);
 }
 
-void Shader::setVec4i(const char *location, int *vec) {
-    glUniform4i(glGetUniformLocation(this->programID, location), vec[0], vec[1], vec[2], vec[3]);
+void Shader::setVec4i(const char *location, int x, int y, int z, int w) {
+    glUniform4i(glGetUniformLocation(this->programID, location), x, y, z, w);
 }
 
-void Shader::setFloat(const char *location, int value) {
+void Shader::setFloat(const char *location, float value) {
     glUniform1f(glGetUniformLocation(this->programID, location), value);
 }
 
-void Shader::setVec2f(const char *location, float *vec) {
-    glUniform2f(glGetUniformLocation(this->programID, location), vec[0], vec[1]);
+void Shader::setVec2f(const char *location, float x, float y) {
+    glUniform2f(glGetUniformLocation(this->programID, location), x, y);
 }
 
-void Shader::setVec3f(const char *location, float *vec) {
-    glUniform3f(glGetUniformLocation(this->programID, location), vec[0], vec[1], vec[2]);
+void Shader::setVec3f(const char *location, float x, float y, float z) {
+    glUniform3f(glGetUniformLocation(this->programID, location), x, y, z);
 }
 
-void Shader::setVec4f(const char *location, float *vec) {
-    glUniform4f(glGetUniformLocation(this->programID, location), vec[0], vec[1], vec[2], vec[3]);
+void Shader::setVec4f(const char *location, float x, float y, float z, float w) {
+    glUniform4f(glGetUniformLocation(this->programID, location), x, y, z, w);
 }
 
 void Shader::setMat2f(const char *location, glm::mat2 &mat) {

@@ -15,14 +15,14 @@ class Shader {
         int getUniformLocation(const char* uniformName);
 
         void setInt(const char *location, int value);
-        void setVec2i(const char *location, int* vec);
-        void setVec3i(const char *location, int* vec);
-        void setVec4i(const char *location, int* vec);
+        void setVec2i(const char *location, int x, int y);
+        void setVec3i(const char *location, int x, int y, int z);
+        void setVec4i(const char *location, int x, int y, int z, int w);
 
-        void setFloat(const char *location, int value);
-        void setVec2f(const char *location, float* vec);
-        void setVec3f(const char *location, float* vec);
-        void setVec4f(const char *location, float* vec);
+        void setFloat(const char *location, float value);
+        void setVec2f(const char *location, float x, float y);
+        void setVec3f(const char *location, float x, float y, float z);
+        void setVec4f(const char *location, float x, float y, float z, float w);
 
         void setMat2f(const char *location, glm::mat2 &mat);
         void setMat3f(const char *location, glm::mat3 &mat);
