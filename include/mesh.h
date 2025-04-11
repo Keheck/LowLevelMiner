@@ -24,7 +24,8 @@ struct VertexDataDescriptor {
     int elementSize;
 };
 
-const VertexDataDescriptor POS_AND_UV[] = {
+const VertexDataDescriptor POS_UV_NORMAL[] = {
     {GL_FLOAT, 3, sizeof(float)},
-    {GL_FLOAT, 2, sizeof(float)}
+    {GL_FLOAT, 2, sizeof(float)},
+    {GL_FLOAT, 3, sizeof(float)}
 };
