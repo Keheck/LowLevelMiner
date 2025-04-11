@@ -1,7 +1,7 @@
 #include "mesh.h"
 #include <stdarg.h>
 
-Mesh::Mesh(std::vector<float> &vertexData, std::vector<int> &indices) {
+Mesh::Mesh(std::vector<float> &vertexData, std::vector<unsigned int> &indices) {
     glGenVertexArrays(1, &(this->VAO));
     glGenBuffers(1, &(this->VBO));
     glGenBuffers(1, &(this->EBO));
@@ -11,7 +11,7 @@ Mesh::Mesh(std::vector<float> &vertexData, std::vector<int> &indices) {
     glBufferData(GL_ARRAY_BUFFER, vertexData.size()*sizeof(float), vertexData.data(), GL_STATIC_DRAW);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(int), indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

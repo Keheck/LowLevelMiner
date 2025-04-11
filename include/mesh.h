@@ -8,7 +8,7 @@ struct VertexDataDescriptor;
 
 class Mesh {
     public:
-        Mesh(std::vector<float> &data, std::vector<int> &indices);
+        Mesh(std::vector<float> &data, std::vector<unsigned int> &indices);
         ~Mesh();
         void cleanup();
         void bindArray();
