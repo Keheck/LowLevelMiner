@@ -68,8 +68,9 @@ int main(int, char**){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
+    #ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
     stbi_set_flip_vertically_on_load(1);
 
     GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
@@ -233,16 +234,16 @@ int main(int, char**){
     while(!glfwWindowShouldClose(window)) {
         deltaTime = glfwGetTime() - lastTime;
         lastTime = glfwGetTime();
-
+        
         process_input(window);
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
         glm::mat4 cubeTransform = glm::rotate(cubeTranslation, (float)glfwGetTime(), glm::vec3(0.91f, 0.71f, 0.07f));
         glm::mat3 cubeNormalMat = glm::transpose(glm::inverse(cubeTransform));
-        
+
         cube.bindArray();
         litShader.use_shader();
         litShader.setMat4f("projection", projection);
