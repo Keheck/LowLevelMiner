@@ -11,10 +11,10 @@ uniform vec3 lightPosition;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
-uniform sampler2D tex;
+uniform sampler2D Albedo;
 
 void main() {
-    vec3 baseColor = texture(tex, texCoord).rgb;
+    vec3 baseColor = texture(Albedo, texCoord).rgb;
 
     float ambientStrength = 0.1;
     vec3 ambientLight = ambientStrength * lightColor;

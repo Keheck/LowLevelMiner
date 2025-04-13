@@ -1,10 +1,10 @@
 set(SHADER_SOURCES
-    fragment/default.shader
     vertex/default.shader
     fragment/mix.shader
     fragment/lit.shader
     fragment/light.shader
     vertex/light.shader
+    fragment/unlit.shader
 )
 
 set(SHADER_HEADERS "")
