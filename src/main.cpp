@@ -8,12 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shader.h"
-#include "vertex/default.shader.h"
-#include "vertex/light.shader.h"
-#include "fragment/default.shader.h"
-#include "fragment/mix.shader.h"
-#include "fragment/lit.shader.h"
-#include "fragment/light.shader.h"
+#include "shaders.h"
 #include "stb_image.h"
 #include "texture.h"
 #include "mesh.h"

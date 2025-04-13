@@ -27,4 +27,9 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fragment)
 
 add_executable(shdr2hdr ${CMAKE_CURRENT_SOURCE_DIR}/embed_shader.cpp)
 
+list(TRANSFORM SHADER_SOURCES PREPEND "#include \"" OUTPUT_VARIABLE SHADER_INCLUDES)
+list(TRANSFORM SHADER_INCLUDES APPEND ".h\"\n")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/shaders.h "#pragma once\n")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/shaders.h ${SHADER_INCLUDES})
+
 add_custom_target(shaders DEPENDS ${SHADER_HEADERS})
