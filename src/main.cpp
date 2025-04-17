@@ -97,70 +97,36 @@ int main(int, char**){
 
     const float inverseSqrt3 = 1.0f / sqrt(3.0f);
     
-    std::vector<float> cubeVertices = {
-        // PSOITION              UV COORDS   NORMALS
-        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,   0.0f,  0.0f,  1.0f,
+    std::vector<Vertex> cubeVertices = {
+        {glm::vec3(-0.5f, -0.5f,  0.5f),   glm::vec2(0.0f, 0.0f),   glm::vec3(0.0f,  0.0f,  1.0f)},
+        {glm::vec3( 0.5f, -0.5f,  0.5f),   glm::vec2(1.0f, 0.0f),   glm::vec3(0.0f,  0.0f,  1.0f)},
+        {glm::vec3( 0.5f,  0.5f,  0.5f),   glm::vec2(1.0f, 1.0f),   glm::vec3(0.0f,  0.0f,  1.0f)},
+        {glm::vec3(-0.5f,  0.5f,  0.5f),   glm::vec2(0.0f, 1.0f),   glm::vec3(0.0f,  0.0f,  1.0f)},
 
-        -0.5f, -0.5f, -0.5f,   1.0f, 0.0f,   0.0f,  0.0f, -1.0f,
-         0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f,  0.0f, -1.0f,
-        -0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f,  0.0f, -1.0f,
+        {glm::vec3(-0.5f, -0.5f, -0.5f),   glm::vec2(1.0f, 0.0f),   glm::vec3(0.0f,  0.0f, -1.0f)},
+        {glm::vec3( 0.5f, -0.5f, -0.5f),   glm::vec2(0.0f, 0.0f),   glm::vec3(0.0f,  0.0f, -1.0f)},
+        {glm::vec3( 0.5f,  0.5f, -0.5f),   glm::vec2(0.0f, 1.0f),   glm::vec3(0.0f,  0.0f, -1.0f)},
+        {glm::vec3(-0.5f,  0.5f, -0.5f),   glm::vec2(1.0f, 1.0f),   glm::vec3(0.0f,  0.0f, -1.0f)},
     
-         0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,   1.0f, 0.0f,   1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,   0.0f, 1.0f,   1.0f,  0.0f,  0.0f,
+        {glm::vec3( 0.5f, -0.5f,  0.5f),   glm::vec2(0.0f, 0.0f),   glm::vec3(1.0f,  0.0f,  0.0f)},
+        {glm::vec3( 0.5f, -0.5f, -0.5f),   glm::vec2(1.0f, 0.0f),   glm::vec3(1.0f,  0.0f,  0.0f)},
+        {glm::vec3( 0.5f,  0.5f, -0.5f),   glm::vec2(1.0f, 1.0f),   glm::vec3(1.0f,  0.0f,  0.0f)},
+        {glm::vec3( 0.5f,  0.5f,  0.5f),   glm::vec2(0.0f, 1.0f),   glm::vec3(1.0f,  0.0f,  0.0f)},
     
-        -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,  -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,  -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,  -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,  -1.0f,  0.0f,  0.0f,
+        {glm::vec3(-0.5f, -0.5f,  0.5f),   glm::vec2(1.0f, 0.0f),  glm::vec3(-1.0f,  0.0f,  0.0f)},
+        {glm::vec3(-0.5f, -0.5f, -0.5f),   glm::vec2(0.0f, 0.0f),  glm::vec3(-1.0f,  0.0f,  0.0f)},
+        {glm::vec3(-0.5f,  0.5f, -0.5f),   glm::vec2(0.0f, 1.0f),  glm::vec3(-1.0f,  0.0f,  0.0f)},
+        {glm::vec3(-0.5f,  0.5f,  0.5f),   glm::vec2(1.0f, 1.0f),  glm::vec3(-1.0f,  0.0f,  0.0f)},
     
-        -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,   0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,   1.0f, 0.0f,   0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,   1.0f, 1.0f,   0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f,  1.0f,  0.0f,
+        {glm::vec3(-0.5f,  0.5f,  0.5f),   glm::vec2(0.0f, 0.0f),   glm::vec3(0.0f,  1.0f,  0.0f)},
+        {glm::vec3( 0.5f,  0.5f,  0.5f),   glm::vec2(1.0f, 0.0f),   glm::vec3(0.0f,  1.0f,  0.0f)},
+        {glm::vec3( 0.5f,  0.5f, -0.5f),   glm::vec2(1.0f, 1.0f),   glm::vec3(0.0f,  1.0f,  0.0f)},
+        {glm::vec3(-0.5f,  0.5f, -0.5f),   glm::vec2(0.0f, 1.0f),   glm::vec3(0.0f,  1.0f,  0.0f)},
     
-        -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,   1.0f, 1.0f,   0.0f, -1.0f,  0.0f,
-    };
-    
-    std::vector<float> lightVertices = {
-        // PSOITION            
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-    
-         0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f,  0.5f,
-    
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f,  0.5f,
-    
-        -0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-    
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f
+        {glm::vec3(-0.5f, -0.5f,  0.5f),   glm::vec2(1.0f, 0.0f),   glm::vec3(0.0f, -1.0f,  0.0f)},
+        {glm::vec3( 0.5f, -0.5f,  0.5f),   glm::vec2(0.0f, 0.0f),   glm::vec3(0.0f, -1.0f,  0.0f)},
+        {glm::vec3( 0.5f, -0.5f, -0.5f),   glm::vec2(0.0f, 1.0f),   glm::vec3(0.0f, -1.0f,  0.0f)},
+        {glm::vec3(-0.5f, -0.5f, -0.5f),   glm::vec2(1.0f, 1.0f),   glm::vec3(0.0f, -1.0f,  0.0f)},
     };
 
     std::vector<unsigned int> indices = {
@@ -195,17 +161,12 @@ int main(int, char**){
     //     glm::vec3( 1.5f,  0.2f, -1.5f),
     //     glm::vec3(-1.3f,  1.0f, -1.5f)
     // };
+    glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, -5.0f);
+    glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, -3.0f);
+    glm::vec3 lightScale = glm::vec3(0.2f);
 
     Mesh cube = Mesh(cubeVertices, indices);
-    cube.setVertexData(3, POS_UV_NORMAL);
-    glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, -3.0f);
-
-    
-    // Mesh light = Mesh(lightVertices, indices);
-    // light.setVertexData(1, POS_UV_NORMAL);
-    
-    glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, -2.0f);
-    glm::vec3 lightScale = glm::vec3(0.2f);
+    Mesh light = Mesh(cubeVertices, indices);
     
     Texture container("assets/textures/container.jpg");
     Texture face("assets/textures/awesomeface.png");
@@ -216,10 +177,8 @@ int main(int, char**){
     
     GameObject cubeObject = GameObject(cube, Transform(cubePosition, glm::quat(1.0f, glm::vec3(0.0f)), glm::vec3(1.0f)));
     cubeObject.setTexture("Albedo", wop);
-    // container.occupyUnit(GL_TEXTURE0);
-    // face.occupyUnit(GL_TEXTURE1);
-    // fops.occupyUnit(GL_TEXTURE0);
-    // wop.occupyUnit(GL_TEXTURE0);
+
+    GameObject lightObject = GameObject(light, Transform(lightPosition, glm::quat(1.0f, glm::vec3(0.0f)), lightScale));
     
     Shader litShader = Shader(&_vertex_default_shader, &_fragment_lit_shader);
     Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
