@@ -4,10 +4,7 @@ in vec3 normal;
 in vec3 fragPos;
 in vec2 texCoord;
 
-uniform vec3 objectColor;
 uniform vec3 lightColor;
-uniform vec3 lightPosition;
-
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
