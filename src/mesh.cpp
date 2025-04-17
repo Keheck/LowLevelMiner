@@ -1,5 +1,6 @@
 #include "mesh.h"
 #include <stdarg.h>
+#include <utility>
 
 Mesh::Mesh(std::vector<float> &vertexData, std::vector<unsigned int> &indices) {
     glGenVertexArrays(1, &(this->VAO));
@@ -16,6 +17,8 @@ Mesh::Mesh(std::vector<float> &vertexData, std::vector<unsigned int> &indices) {
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    indexCount = indices.size();
 }
 
 void Mesh::bindArray() {
@@ -39,6 +42,17 @@ void Mesh::setVertexData(int count, const VertexDataDescriptor* descriptors) {
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Mesh::draw(Shader &shader) {
+    int i = 0;
+
+    for(auto keyValuePair : this->textures) {
+        keyValuePair.second.occupyUnit(GL_TEXTURE0+i);
+        shader.setInt(keyValuePair.first.c_str(), i);
+    }
+    this->bindArray();
+    glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0);
 }
 
 Mesh::~Mesh() {

@@ -13,9 +13,11 @@ class Mesh {
         void cleanup();
         void bindArray();
         void setVertexData(int count, const VertexDataDescriptor *descriptors);
+        void draw(Shader &shader);
+        std::map<std::string, Texture> textures;
     private:
         unsigned int VAO, VBO, EBO;
-        int textures[32] = {0};
+        unsigned int indexCount;
 };
 
 struct VertexDataDescriptor {
