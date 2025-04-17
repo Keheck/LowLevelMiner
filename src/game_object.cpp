@@ -27,6 +27,7 @@ void GameObject::draw(Shader &shader) {
     shader.setMat4f("model", transtack::top());
     shader.setMat4f("view", transtack::viewMatrix);
     shader.setMat4f("projection", transtack::projectionMatrix);
+    shader.setMat3f("normalMat", glm::transpose(glm::inverse(transtack::top())));
     this->mMesh.draw(shader);
 
     transtack::pop_matrix();
