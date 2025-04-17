@@ -24,9 +24,9 @@ class Shader {
         void setVec3f(const char *location, float x, float y, float z);
         void setVec4f(const char *location, float x, float y, float z, float w);
 
-        void setMat2f(const char *location, glm::mat2 &mat);
-        void setMat3f(const char *location, glm::mat3 &mat);
-        void setMat4f(const char *location, glm::mat4 &mat);
+        void setMat2f(const char *location, glm::mat2 mat);
+        void setMat3f(const char *location, glm::mat3 mat);
+        void setMat4f(const char *location, glm::mat4 mat);
     private:
         unsigned int programID;
 
