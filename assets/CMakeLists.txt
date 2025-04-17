@@ -3,3 +3,5 @@ file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/container.jpg ${CMAKE_CURREN
 file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/awesomeface.png ${CMAKE_CURRENT_BINARY_DIR}/textures/awesomeface.png)
 file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/fops.png ${CMAKE_CURRENT_BINARY_DIR}/textures/fops.png)
 file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/wop.png ${CMAKE_CURRENT_BINARY_DIR}/textures/wop.png)
+file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/marble.jpg ${CMAKE_CURRENT_BINARY_DIR}/textures/marble.jpg)
+file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/concrete.jpg ${CMAKE_CURRENT_BINARY_DIR}/textures/concrete.jpg)
