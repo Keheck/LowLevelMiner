@@ -181,25 +181,12 @@ int main(int, char**){
     GameObject lightObject = GameObject(light, Transform(lightPosition, glm::quat(1.0f, glm::vec3(0.0f)), lightScale));
     
     Shader litShader = Shader(&_vertex_default_shader, &_fragment_lit_shader);
-    Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
+    // Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
     Shader lightShader = Shader(&_vertex_light_shader, &_fragment_light_shader);
     
-    // litShader.use_shader();
-    // litShader.setInt("tex", 0);
-    // litShader.setInt("face", 1);
-    // litShader.setVec3f("objectColor", 1.0f, 0.5f, 0.31f);
-    // litShader.setVec3f("lightColor", 1.0f, 1.0f, 1.0f);
-    // litShader.setVec3f("lightPos", lightPosition.x, lightPosition.y, lightPosition.z);
-
-    // unlitShader.use_shader();
-    // unlitShader.setInt("Albedo", 0);
-    // concrete.occupyUnit(GL_TEXTURE0);
-
     glEnable(GL_DEPTH_TEST);
     const float radius = 10.0f;
     
-    // glm::mat4 lightTranslation = glm::scale(glm::translate(glm::mat4(1.0f), lightPosition), lightScale);
-    // glm::mat4 cubeTranslation = glm::translate(glm::mat4(1.0f), cubePosition);
     glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
     
     while(!glfwWindowShouldClose(window)) {
@@ -216,39 +203,15 @@ int main(int, char**){
         transtack::projectionMatrix = projection;
         transtack::viewMatrix = view;
 
+        litShader.use_shader();
+        litShader.setVec3f("lightPos", lightPosition.x, lightPosition.y, lightPosition.z);
+        litShader.setVec3f("viewPos", camera.position.x, camera.position.y, camera.position.z);
+        litShader.setVec3f("lightColor", 1.0f, 1.0f, 1.0f);
+
         cubeObject.rotate(glm::radians(30.0f)*deltaTime, glm::vec3(0.42f, 0.49f, 0.01f));
-        cubeObject.draw(unlitShader);
-
-        // glm::mat4 cubeTransform = glm::rotate(cubeTranslation, (float)glfwGetTime(), glm::vec3(0.91f, 0.71f, 0.07f));
-        // glm::mat3 cubeNormalMat = glm::transpose(glm::inverse(cubeTransform));
-
-        // cube.bindArray();
-        // litShader.use_shader();
-        // unlitShader.setMat4f("projection", projection);
-        // unlitShader.setMat4f("view", view);
-        // unlitShader.setMat4f("model", cubeTransform);
-
-        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-        // light.bindArray();
-
-        // lightShader.use_shader();
-        // lightShader.setMat4f("projection", projection);
-        // lightShader.setMat4f("view", view);
-        // lightShader.setMat4f("model", lightTranslation);
-        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        cubeObject.draw(litShader);
         
-        // for(unsigned int i = 0; i < sizeof(cubePositions)/sizeof(cubePositions[0]); i++) {
-        //     glm::vec3 position = cubePositions[i];
-        //     glm::mat4 model = glm::mat4(1.0f);
-        //     model = glm::translate(model, position);
-
-        //     float angle = 20.0f * i;
-        //     model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
-        //     litShader.setMat4f("model", model);
-
-        //     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-        // }
+        lightObject.draw(lightShader);
 
         glBindVertexArray(0);
         
