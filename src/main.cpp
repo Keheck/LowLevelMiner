@@ -13,10 +13,12 @@
 #include "texture.h"
 #include "mesh.h"
 #include "camera.h"
+#include "game_object.h"
+#include "render_manager.h"
 
 double lastTime, deltaTime;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), 0.0f, 0.0f);
+Camera camera(glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f);
 
 void resize_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -196,39 +198,49 @@ int main(int, char**){
 
     Mesh cube = Mesh(cubeVertices, indices);
     cube.setVertexData(3, POS_UV_NORMAL);
+    glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, -3.0f);
 
-    Mesh light = Mesh(lightVertices, indices);
-    light.setVertexData(1, POS_UV_NORMAL);
-
-    glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    
+    // Mesh light = Mesh(lightVertices, indices);
+    // light.setVertexData(1, POS_UV_NORMAL);
+    
     glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, -2.0f);
     glm::vec3 lightScale = glm::vec3(0.2f);
-
+    
     Texture container("assets/textures/container.jpg");
     Texture face("assets/textures/awesomeface.png");
     Texture fops("assets/textures/fops.png");
     Texture wop("assets/textures/wop.png");
+    Texture concrete("assets/textures/concrete.jpg");
+    Texture marble("assets/textures/marble.jpg");
     
+    GameObject cubeObject = GameObject(cube, Transform(cubePosition, glm::quat(1.0f, glm::vec3(0.0f)), glm::vec3(1.0f)));
+    cubeObject.setTexture("Albedo", wop);
     // container.occupyUnit(GL_TEXTURE0);
     // face.occupyUnit(GL_TEXTURE1);
     // fops.occupyUnit(GL_TEXTURE0);
-    wop.occupyUnit(GL_TEXTURE0);
+    // wop.occupyUnit(GL_TEXTURE0);
     
     Shader litShader = Shader(&_vertex_default_shader, &_fragment_lit_shader);
+    Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
     Shader lightShader = Shader(&_vertex_light_shader, &_fragment_light_shader);
     
-    litShader.use_shader();
-    litShader.setInt("tex", 0);
+    // litShader.use_shader();
+    // litShader.setInt("tex", 0);
     // litShader.setInt("face", 1);
-    litShader.setVec3f("objectColor", 1.0f, 0.5f, 0.31f);
-    litShader.setVec3f("lightColor", 1.0f, 1.0f, 1.0f);
-    litShader.setVec3f("lightPos", lightPosition.x, lightPosition.y, lightPosition.z);
+    // litShader.setVec3f("objectColor", 1.0f, 0.5f, 0.31f);
+    // litShader.setVec3f("lightColor", 1.0f, 1.0f, 1.0f);
+    // litShader.setVec3f("lightPos", lightPosition.x, lightPosition.y, lightPosition.z);
+
+    // unlitShader.use_shader();
+    // unlitShader.setInt("Albedo", 0);
+    // concrete.occupyUnit(GL_TEXTURE0);
 
     glEnable(GL_DEPTH_TEST);
     const float radius = 10.0f;
     
-    glm::mat4 lightTranslation = glm::scale(glm::translate(glm::mat4(1.0f), lightPosition), lightScale);
-    glm::mat4 cubeTranslation = glm::translate(glm::mat4(1.0f), cubePosition);
+    // glm::mat4 lightTranslation = glm::scale(glm::translate(glm::mat4(1.0f), lightPosition), lightScale);
+    // glm::mat4 cubeTranslation = glm::translate(glm::mat4(1.0f), cubePosition);
     glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
     
     while(!glfwWindowShouldClose(window)) {
@@ -241,26 +253,31 @@ int main(int, char**){
         
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
-        glm::mat4 cubeTransform = glm::rotate(cubeTranslation, (float)glfwGetTime(), glm::vec3(0.91f, 0.71f, 0.07f));
-        glm::mat3 cubeNormalMat = glm::transpose(glm::inverse(cubeTransform));
 
-        cube.bindArray();
-        litShader.use_shader();
-        litShader.setMat4f("projection", projection);
-        litShader.setMat4f("view", view);
-        litShader.setMat4f("model", cubeTransform);
-        litShader.setMat3f("normalMat", cubeNormalMat);
-        litShader.setVec3f("viewPos", camera.position.x, camera.position.y, camera.position.z);
+        transtack::projectionMatrix = projection;
+        transtack::viewMatrix = view;
 
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        cubeObject.rotate(glm::radians(30.0f)*deltaTime, glm::vec3(0.42f, 0.49f, 0.01f));
+        cubeObject.draw(unlitShader);
 
-        light.bindArray();
+        // glm::mat4 cubeTransform = glm::rotate(cubeTranslation, (float)glfwGetTime(), glm::vec3(0.91f, 0.71f, 0.07f));
+        // glm::mat3 cubeNormalMat = glm::transpose(glm::inverse(cubeTransform));
 
-        lightShader.use_shader();
-        lightShader.setMat4f("projection", projection);
-        lightShader.setMat4f("view", view);
-        lightShader.setMat4f("model", lightTranslation);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        // cube.bindArray();
+        // litShader.use_shader();
+        // unlitShader.setMat4f("projection", projection);
+        // unlitShader.setMat4f("view", view);
+        // unlitShader.setMat4f("model", cubeTransform);
+
+        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+        // light.bindArray();
+
+        // lightShader.use_shader();
+        // lightShader.setMat4f("projection", projection);
+        // lightShader.setMat4f("view", view);
+        // lightShader.setMat4f("model", lightTranslation);
+        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         
         // for(unsigned int i = 0; i < sizeof(cubePositions)/sizeof(cubePositions[0]); i++) {
         //     glm::vec3 position = cubePositions[i];
@@ -281,9 +298,9 @@ int main(int, char**){
     }
 
     cube.cleanup();
-    light.cleanup();
     lightShader.cleanup();
     litShader.cleanup();
+    unlitShader.cleanup();
 
     glfwTerminate();
     return 0;

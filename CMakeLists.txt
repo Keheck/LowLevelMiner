@@ -15,6 +15,8 @@ add_executable(LowLevelMiner
     src/texture.cpp
     src/mesh.cpp
     src/camera.cpp
+    src/render_manager.cpp
+    src/game_object.cpp
 )
 
 target_compile_features(LowLevelMiner PUBLIC cxx_std_11)
