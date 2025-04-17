@@ -23,8 +23,6 @@ class Mesh {
     public:
         Mesh(std::vector<float> &data, std::vector<unsigned int> &indices);
         Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
-        ~Mesh();
-        void cleanup();
         void bindArray();
         void setVertexData(int count, const VertexDataDescriptor *descriptors);
         void draw(Shader &shader);

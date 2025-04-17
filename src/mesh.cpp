@@ -54,17 +54,3 @@ void Mesh::draw(Shader &shader) {
     this->bindArray();
     glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0);
 }
-
-Mesh::~Mesh() {
-    cleanup();
-}
-
-void Mesh::cleanup() {
-    if(this->VAO) glDeleteVertexArrays(1, &(this->VAO));
-    if(this->EBO) glDeleteBuffers(1, &(this->EBO));
-    if(this->VBO) glDeleteBuffers(1, &(this->VBO));
-
-    this->EBO = 0;
-    this->VAO = 0;
-    this->VBO = 0;
-}

@@ -297,11 +297,6 @@ int main(int, char**){
         glfwPollEvents();
     }
 
-    cube.cleanup();
-    lightShader.cleanup();
-    litShader.cleanup();
-    unlitShader.cleanup();
-
     glfwTerminate();
     return 0;
 }
