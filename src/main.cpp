@@ -149,41 +149,32 @@ int main(int, char**){
         20, 22, 23
     };
 
-    // glm::vec3 cubePositions[] = {
-    //     glm::vec3( 0.0f,  0.0f,  0.0f),
-    //     glm::vec3( 2.0f,  5.0f, -15.0f),
-    //     glm::vec3(-1.5f, -2.2f, -2.5f),
-    //     glm::vec3(-3.8f, -2.0f, -12.3f),
-    //     glm::vec3( 2.4f, -0.4f, -3.5f),
-    //     glm::vec3(-1.7f,  3.0f, -7.5f),
-    //     glm::vec3( 1.3f, -2.0f, -2.5f),
-    //     glm::vec3( 1.5f,  2.0f, -2.5f),
-    //     glm::vec3( 1.5f,  0.2f, -1.5f),
-    //     glm::vec3(-1.3f,  1.0f, -1.5f)
-    // };
-    glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, -5.0f);
-    glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, -3.0f);
-    glm::vec3 lightScale = glm::vec3(0.2f);
+    // glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, -5.0f);
+    // glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, -3.0f);
+    // glm::vec3 lightScale = glm::vec3(0.2f);
 
     Mesh cube = Mesh(cubeVertices, indices);
     
     Texture container("assets/textures/container.jpg");
-    Texture face("assets/textures/awesomeface.png");
-    Texture fops("assets/textures/fops.png");
-    Texture wop("assets/textures/wop.png");
     Texture concrete("assets/textures/concrete.jpg");
     Texture marble("assets/textures/marble.jpg");
     
-    GameObject cubeObject = GameObject(cube, Transform(cubePosition, glm::quat(1.0f, glm::vec3(0.0f)), glm::vec3(1.0f)));
-    cubeObject.setTexture("Albedo", wop);
+    GameObject box1 = GameObject(cube, Transform(glm::vec3(1.0f, -0.5f, -1.5f)));
+    GameObject box2 = GameObject(cube, Transform(glm::vec3(-1.5f, -0.5f, -2.0f)));
 
-    GameObject lightObject = GameObject(cube, Transform(lightPosition, glm::quat(1.0f, glm::vec3(0.0f)), lightScale));
+    // box1.setTexture("Albedo", container);
+    // box2.setTexture("Albedo", container);
+
+    GameObject floor = GameObject(cube, Transform(glm::vec3(0.0f, -1.5f, 0.0f), glm::quat(1.0f, glm::vec3(0.0f)), glm::vec3(10.0f, 1.0f, 10.0f)));
+    // floor.setTexture("Albedo", concrete);
     
     Shader litShader = Shader(&_vertex_default_shader, &_fragment_lit_shader);
-    // Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
+    Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
     Shader lightShader = Shader(&_vertex_light_shader, &_fragment_light_shader);
+    Shader depthVisualisation = Shader(&_vertex_default_shader, &_fragment_depth_vis_shader);
     
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     const float radius = 10.0f;
     
     glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
@@ -197,20 +188,22 @@ int main(int, char**){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glm::mat4 view = camera.getViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
 
         transtack::projectionMatrix = projection;
         transtack::viewMatrix = view;
 
-        litShader.use_shader();
-        litShader.setVec3f("lightPos", lightPosition.x, lightPosition.y, lightPosition.z);
-        litShader.setVec3f("viewPos", camera.position.x, camera.position.y, camera.position.z);
-        litShader.setVec3f("lightColor", 1.0f, 1.0f, 1.0f);
+        // litShader.use_shader();
+        // litShader.setVec3f("lightPos", lightPosition.x, lightPosition.y, lightPosition.z);
+        // litShader.setVec3f("viewPos", camera.position.x, camera.position.y, camera.position.z);
+        // litShader.setVec3f("lightColor", 1.0f, 1.0f, 1.0f);
 
-        cubeObject.rotate(glm::radians(30.0f)*deltaTime, glm::vec3(0.42f, 0.49f, 0.01f));
-        cubeObject.draw(litShader);
+        cube.textures["Albedo"] = container;
+        box1.draw(unlitShader);
+        box2.draw(unlitShader);
         
-        lightObject.draw(lightShader);
+        cube.textures["Albedo"] = concrete;
+        floor.draw(unlitShader);
 
         glBindVertexArray(0);
         
