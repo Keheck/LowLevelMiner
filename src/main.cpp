@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <cstdlib>
+#include <algorithm>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -187,10 +188,11 @@ int main(int, char**){
     Texture concrete("assets/textures/concrete.jpg");
     Texture marble("assets/textures/marble.jpg");
     Texture grass("assets/textures/grass.png");
+    Texture windowTexture("assets/textures/blending_transparent_window.png");
 
     Mesh cube = Mesh(cubeVertices, cubeIndices);
     Mesh billboard = Mesh(billboardVertices, billboardIndicies);
-    billboard.textures["Albedo"] = grass;
+    billboard.textures["Albedo"] = windowTexture;
     
     GameObject box1 = GameObject(cube, Transform(glm::vec3(1.0f, -0.5f, -1.5f)));
     GameObject box2 = GameObject(cube, Transform(glm::vec3(-1.5f, -0.5f, -2.0f)));
@@ -212,8 +214,17 @@ int main(int, char**){
     outlineShader.setVec3f("outlineColor", 0.5f, 0.3f, 0.0f);
     
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
+
+    auto distanceSorter = [](glm::vec3 pos1, glm::vec3 pos2) {
+        float distance1 = glm::length(camera.position - pos1);
+        float distance2 = glm::length(camera.position - pos2);
+
+        return distance1 - distance2 > 0.0f;
+    };
     
     while(!glfwWindowShouldClose(window)) {
         deltaTime = glfwGetTime() - lastTime;
@@ -228,24 +239,24 @@ int main(int, char**){
 
         transtack::projectionMatrix = projection;
         transtack::viewMatrix = view;
+        
+        cube.textures["Albedo"] = container;
+        box1.draw(unlitShader);
+        box2.draw(unlitShader);
+        
+        cube.textures["Albedo"] = concrete;
+        floor.draw(unlitShader);
 
+        std::sort(vegetation.begin(), vegetation.end(), distanceSorter);
+        
         for(int i = 0; i < 10; i++) {
             glm::vec3 grassPosition = vegetation[i];
             float angle = angles[i];
 
             billboardObject.mTransform.mPosition = grassPosition;
-            billboardObject.mTransform.mRotation = glm::angleAxis(angle, glm::vec3(0.0f, 1.0f, 0.0f));
+            // billboardObject.mTransform.mRotation = glm::angleAxis(angle, glm::vec3(0.0f, 1.0f, 0.0f));
             billboardObject.draw(unlitShader);
         }
-
-        cube.textures["Albedo"] = container;
-        box1.draw(unlitShader);
-        box2.draw(unlitShader);
-
-        cube.textures["Albedo"] = concrete;
-        floor.draw(unlitShader);
-
-        glBindVertexArray(0);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
