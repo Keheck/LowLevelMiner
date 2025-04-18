@@ -166,7 +166,6 @@ int main(int, char**){
     glm::vec3 lightScale = glm::vec3(0.2f);
 
     Mesh cube = Mesh(cubeVertices, indices);
-    Mesh light = Mesh(cubeVertices, indices);
     
     Texture container("assets/textures/container.jpg");
     Texture face("assets/textures/awesomeface.png");
@@ -178,7 +177,7 @@ int main(int, char**){
     GameObject cubeObject = GameObject(cube, Transform(cubePosition, glm::quat(1.0f, glm::vec3(0.0f)), glm::vec3(1.0f)));
     cubeObject.setTexture("Albedo", wop);
 
-    GameObject lightObject = GameObject(light, Transform(lightPosition, glm::quat(1.0f, glm::vec3(0.0f)), lightScale));
+    GameObject lightObject = GameObject(cube, Transform(lightPosition, glm::quat(1.0f, glm::vec3(0.0f)), lightScale));
     
     Shader litShader = Shader(&_vertex_default_shader, &_fragment_lit_shader);
     // Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
