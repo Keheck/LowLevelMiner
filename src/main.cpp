@@ -2,6 +2,7 @@
 #include <cmath>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <cstdlib>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -129,7 +130,7 @@ int main(int, char**){
         {glm::vec3(-0.5f, -0.5f, -0.5f),   glm::vec2(1.0f, 1.0f),   glm::vec3(0.0f, -1.0f,  0.0f)},
     };
 
-    std::vector<unsigned int> indices = {
+    std::vector<unsigned int> cubeIndices = {
         0, 1, 2,
         0, 2, 3,
 
@@ -149,18 +150,51 @@ int main(int, char**){
         20, 22, 23
     };
 
+    std::vector<Vertex> billboardVertices = {
+        {glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3( 0.5f,  0.5f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3(-0.5f,  0.5f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+    };
+
+    std::vector<unsigned int> billboardIndicies = {0, 1, 2, 0, 2, 3};
+
+    std::vector<glm::vec3> vegetation = {
+        glm::vec3(2.38f, -0.50f, -2.76f),
+        glm::vec3(3.17f, -0.50f, -3.10f),
+        glm::vec3(-3.44f, -0.50f, -3.00f),
+        glm::vec3(-0.39f, -0.50f, 0.67f),
+        glm::vec3(0.64f, -0.50f, -3.41f),
+        glm::vec3(3.47f, -0.50f, -1.69f),
+        glm::vec3(2.53f, -0.50f, -4.23f),
+        glm::vec3(-2.67f, -0.50f, -4.26f),
+        glm::vec3(-3.80f, -0.50f, 3.49f),
+        glm::vec3(0.96f, -0.50f, 1.04f),
+    };
+
+    std::vector<float> angles;
+    srand(1);
+
+    for(int i = 0; i < 10; i++) {
+        angles.push_back((float)rand()/RAND_MAX*3);
+    }
+
     // glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, -5.0f);
     // glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, -3.0f);
     // glm::vec3 lightScale = glm::vec3(0.2f);
-
-    Mesh cube = Mesh(cubeVertices, indices);
     
     Texture container("assets/textures/container.jpg");
     Texture concrete("assets/textures/concrete.jpg");
     Texture marble("assets/textures/marble.jpg");
+    Texture grass("assets/textures/grass.png");
+
+    Mesh cube = Mesh(cubeVertices, cubeIndices);
+    Mesh billboard = Mesh(billboardVertices, billboardIndicies);
+    billboard.textures["Albedo"] = grass;
     
     GameObject box1 = GameObject(cube, Transform(glm::vec3(1.0f, -0.5f, -1.5f)));
     GameObject box2 = GameObject(cube, Transform(glm::vec3(-1.5f, -0.5f, -2.0f)));
+    GameObject billboardObject = GameObject(billboard);
 
     // box1.setTexture("Albedo", container);
     // box2.setTexture("Albedo", container);
@@ -178,9 +212,6 @@ int main(int, char**){
     outlineShader.setVec3f("outlineColor", 0.5f, 0.3f, 0.0f);
     
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_STENCIL_TEST);
-    // glDepthFunc(GL_LESS);
-    const float radius = 10.0f;
     
     glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
     
@@ -190,8 +221,7 @@ int main(int, char**){
         
         process_input(window);
         
-        glStencilMask(0xFF);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
@@ -199,29 +229,21 @@ int main(int, char**){
         transtack::projectionMatrix = projection;
         transtack::viewMatrix = view;
 
-        glStencilMask(0x00);
-        glDepthFunc(GL_LESS);
-        cube.textures["Albedo"] = concrete;
-        floor.draw(unlitShader);
+        for(int i = 0; i < 10; i++) {
+            glm::vec3 grassPosition = vegetation[i];
+            float angle = angles[i];
 
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
-
-        glStencilMask(0xFF);
+            billboardObject.mTransform.mPosition = grassPosition;
+            billboardObject.mTransform.mRotation = glm::angleAxis(angle, glm::vec3(0.0f, 1.0f, 0.0f));
+            billboardObject.draw(unlitShader);
+        }
 
         cube.textures["Albedo"] = container;
         box1.draw(unlitShader);
         box2.draw(unlitShader);
 
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glDepthFunc(GL_ALWAYS);
-        box1.scale(glm::vec3(1.1f));
-        box1.draw(outlineShader);
-        box1.scale(glm::vec3(1/1.1f));
-
-        box2.scale(glm::vec3(1.1f));
-        box2.draw(outlineShader);
-        box2.scale(glm::vec3(1/1.1f));
+        cube.textures["Albedo"] = concrete;
+        floor.draw(unlitShader);
 
         glBindVertexArray(0);
         

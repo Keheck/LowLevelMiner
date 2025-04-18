@@ -28,7 +28,6 @@ class GameObject {
         void scale(glm::vec3 scale);
         void draw(Shader &shader);
         void setTexture(std::string textureName, Texture texture);
-    protected:
-        Mesh &mMesh;
         Transform mTransform;
+        Mesh &mMesh;
 };
