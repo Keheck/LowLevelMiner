@@ -6,5 +6,8 @@ in vec2 texCoord;
 uniform sampler2D Albedo;
 
 void main() {
-    FragColor = texture(Albedo, texCoord);
+    vec4 color = texture(Albedo, texCoord);
+    if(color.a < 0.1)
+        discard;
+    FragColor = color;
 }
