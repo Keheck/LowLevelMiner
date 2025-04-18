@@ -6,6 +6,7 @@ set(SHADER_SOURCES
     vertex/light.shader
     fragment/unlit.shader
     fragment/depth_vis.shader
+    fragment/outline.shader
 )
 
 set(SHADER_HEADERS "")
