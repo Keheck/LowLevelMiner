@@ -12,9 +12,8 @@ class Transform;
 
 class Transform {
     public:
-        Transform(glm::vec3 position, glm::quat rotation, glm::vec3 scale)
-            : mPosition(position), mRotation(rotation), mScale(scale) {}
-        Transform(): mPosition(glm::vec3(0.0f)), mRotation(glm::quat()), mScale(glm::vec3(1.0f)) {}
+        Transform(glm::vec3 position = glm::vec3(0.0f), glm::quat rotation = glm::quat(1.0f, glm::vec3(0.0f)), glm::vec3 scale = glm::vec3(1.0f))
+            : mPosition(position), mRotation(glm::normalize(rotation)), mScale(scale) {}
         glm::vec3 mPosition;
         glm::quat mRotation;
         glm::vec3 mScale;
