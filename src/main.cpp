@@ -172,9 +172,14 @@ int main(int, char**){
     Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
     Shader lightShader = Shader(&_vertex_light_shader, &_fragment_light_shader);
     Shader depthVisualisation = Shader(&_vertex_default_shader, &_fragment_depth_vis_shader);
+    Shader outlineShader = Shader(&_vertex_default_shader, &_fragment_outline_shader);
+
+    outlineShader.use_shader();
+    outlineShader.setVec3f("outlineColor", 0.5f, 0.3f, 0.0f);
     
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    glEnable(GL_STENCIL_TEST);
+    // glDepthFunc(GL_LESS);
     const float radius = 10.0f;
     
     glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
@@ -185,7 +190,8 @@ int main(int, char**){
         
         process_input(window);
         
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glStencilMask(0xFF);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
@@ -193,17 +199,29 @@ int main(int, char**){
         transtack::projectionMatrix = projection;
         transtack::viewMatrix = view;
 
-        // litShader.use_shader();
-        // litShader.setVec3f("lightPos", lightPosition.x, lightPosition.y, lightPosition.z);
-        // litShader.setVec3f("viewPos", camera.position.x, camera.position.y, camera.position.z);
-        // litShader.setVec3f("lightColor", 1.0f, 1.0f, 1.0f);
+        glStencilMask(0x00);
+        glDepthFunc(GL_LESS);
+        cube.textures["Albedo"] = concrete;
+        floor.draw(unlitShader);
+
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+
+        glStencilMask(0xFF);
 
         cube.textures["Albedo"] = container;
         box1.draw(unlitShader);
         box2.draw(unlitShader);
-        
-        cube.textures["Albedo"] = concrete;
-        floor.draw(unlitShader);
+
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        glDepthFunc(GL_ALWAYS);
+        box1.scale(glm::vec3(1.1f));
+        box1.draw(outlineShader);
+        box1.scale(glm::vec3(1/1.1f));
+
+        box2.scale(glm::vec3(1.1f));
+        box2.draw(outlineShader);
+        box2.scale(glm::vec3(1/1.1f));
 
         glBindVertexArray(0);
         
