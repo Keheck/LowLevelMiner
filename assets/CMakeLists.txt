@@ -5,3 +5,5 @@ file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/fops.png ${CMAKE_CURRENT_BIN
 file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/wop.png ${CMAKE_CURRENT_BINARY_DIR}/textures/wop.png)
 file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/marble.jpg ${CMAKE_CURRENT_BINARY_DIR}/textures/marble.jpg)
 file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/concrete.jpg ${CMAKE_CURRENT_BINARY_DIR}/textures/concrete.jpg)
+file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/blending_transparent_window.png ${CMAKE_CURRENT_BINARY_DIR}/textures/blending_transparent_window.png)
+file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/textures/grass.png ${CMAKE_CURRENT_BINARY_DIR}/textures/grass.png)
