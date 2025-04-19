@@ -197,10 +197,10 @@ int main(int, char**){
     }
 
     std::vector<Vertex> screenVertices = {
-        {glm::vec3(-0.9f, -0.9f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
-        {glm::vec3(-0.1f, -0.9f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
-        {glm::vec3(-0.9f, -0.1f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
-        {glm::vec3(-0.1f, -0.1f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3( 1.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
     };
 
     std::vector<unsigned int> screenIndices = {
@@ -289,17 +289,13 @@ int main(int, char**){
         
         process_input(window);
         
-        // =======================
-        // RENDER SCRENE BACKWARDS
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
-        camera.forward *= -1;
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
-        camera.forward *= -1;
 
         transtack::projectionMatrix = projection;
         transtack::viewMatrix = view;
@@ -317,32 +313,10 @@ int main(int, char**){
             billboardObject.mTransform = vegetationTransform;
             billboardObject.draw(unlitShader);
         }
-
-        // ===================
-        // RENDER SCENE NORMAL
         
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        view = camera.getViewMatrix();
-        transtack::viewMatrix = view;
-
-        cube.textures["Albedo"] = &container;
-        box1.draw(unlitShader);
-        box2.draw(unlitShader);
-        
-        cube.textures["Albedo"] = &concrete;
-        floor.draw(unlitShader);
-
-        std::sort(vegetation.begin(), vegetation.end(), distanceSorter);
-        
-        for(auto vegetationTransform : vegetation) {
-            billboardObject.mTransform = vegetationTransform;
-            billboardObject.draw(unlitShader);
-        }
-
-        // =======================
-        // RENDER REAR VIEW MIRROR
         glDisable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT);
         screenShader.use_shader();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, colorbuffer);
