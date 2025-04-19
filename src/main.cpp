@@ -196,6 +196,18 @@ int main(int, char**){
         vegetation[i].mRotation = glm::angleAxis((float)rand()/RAND_MAX*3, glm::vec3(0.0f, 1.0f, 0.0f));
     }
 
+    std::vector<Vertex> screenVertices = {
+        {glm::vec3(-0.9f, -0.9f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3(-0.1f, -0.9f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3(-0.9f, -0.1f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3(-0.1f, -0.1f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+    };
+
+    std::vector<unsigned int> screenIndices = {
+        0, 1, 2,
+        1, 3, 2
+    };
+
     // glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, -5.0f);
     // glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, -3.0f);
     // glm::vec3 lightScale = glm::vec3(0.2f);
@@ -208,6 +220,7 @@ int main(int, char**){
 
     Mesh cube = Mesh(cubeVertices, cubeIndices);
     Mesh billboard = Mesh(billboardVertices, billboardIndicies);
+    Mesh screen = Mesh(screenVertices, screenIndices);
     billboard.textures["Albedo"] = &windowTexture;
     
     GameObject box1 = GameObject(cube, Transform(glm::vec3(1.0f, -0.5f, -1.5f)));
@@ -225,6 +238,7 @@ int main(int, char**){
     Shader lightShader = Shader(&_vertex_light_shader, &_fragment_light_shader);
     Shader depthVisualisation = Shader(&_vertex_default_shader, &_fragment_depth_vis_shader);
     Shader outlineShader = Shader(&_vertex_default_shader, &_fragment_outline_shader);
+    Shader screenShader = Shader(&_vertex_framebuffer_shader, &_fragment_framebuffer_shader);
 
     outlineShader.use_shader();
     outlineShader.setVec3f("outlineColor", 0.5f, 0.3f, 0.0f);
@@ -236,7 +250,6 @@ int main(int, char**){
     glFrontFace(GL_CCW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
 
     auto distanceSorter = [](Transform transform1, Transform transform2) {
         float distance1 = glm::length(camera.position - transform1.mPosition);
@@ -244,6 +257,31 @@ int main(int, char**){
 
         return distance1 - distance2 > 0.0f;
     };
+
+    unsigned int framebuffer;
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+    unsigned int colorbuffer;
+    glGenTextures(1, &colorbuffer);
+    glBindTexture(GL_TEXTURE_2D, colorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorbuffer, 0);
+    
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Framebuffer is incomplete!" << std::endl;
+        return 1;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     
     while(!glfwWindowShouldClose(window)) {
         deltaTime = glfwGetTime() - lastTime;
@@ -251,8 +289,11 @@ int main(int, char**){
         
         process_input(window);
         
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+        glEnable(GL_DEPTH_TEST);
+
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
 
@@ -272,10 +313,19 @@ int main(int, char**){
             billboardObject.mTransform = vegetationTransform;
             billboardObject.draw(unlitShader);
         }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
+        screenShader.use_shader();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, colorbuffer);
+        screenShader.setInt("screenTexture", 0);
+        screen.draw(screenShader);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+    glDeleteFramebuffers(1, &framebuffer);
     return 0;
 }
