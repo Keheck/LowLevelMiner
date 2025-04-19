@@ -67,6 +67,8 @@ void process_input(GLFWwindow *window) {
 constexpr int WIDTH = 800;
 constexpr int HEIGHT = 600;
 
+GLFWwindow *window;
+
 int main(int, char**){
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -77,7 +79,10 @@ int main(int, char**){
     #endif
     stbi_set_flip_vertically_on_load(1);
 
-    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
+    atexit([](){
+        glfwDestroyWindow(window);
+    });
 
     if(window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -203,7 +208,7 @@ int main(int, char**){
 
     Mesh cube = Mesh(cubeVertices, cubeIndices);
     Mesh billboard = Mesh(billboardVertices, billboardIndicies);
-    billboard.textures["Albedo"] = windowTexture;
+    billboard.textures["Albedo"] = &windowTexture;
     
     GameObject box1 = GameObject(cube, Transform(glm::vec3(1.0f, -0.5f, -1.5f)));
     GameObject box2 = GameObject(cube, Transform(glm::vec3(-1.5f, -0.5f, -2.0f)));
@@ -254,11 +259,11 @@ int main(int, char**){
         transtack::projectionMatrix = projection;
         transtack::viewMatrix = view;
         
-        cube.textures["Albedo"] = container;
+        cube.textures["Albedo"] = &container;
         box1.draw(unlitShader);
         box2.draw(unlitShader);
         
-        cube.textures["Albedo"] = concrete;
+        cube.textures["Albedo"] = &concrete;
         floor.draw(unlitShader);
 
         std::sort(vegetation.begin(), vegetation.end(), distanceSorter);
@@ -272,6 +277,5 @@ int main(int, char**){
         glfwPollEvents();
     }
 
-    glfwTerminate();
     return 0;
 }

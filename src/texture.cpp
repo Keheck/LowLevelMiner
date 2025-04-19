@@ -40,6 +40,10 @@ Texture::Texture(const char *fileName) {
     glActiveTexture(previousActive);
 }
 
+Texture::~Texture() {
+    glDeleteTextures(1, &(this->textureID));
+}
+
 void Texture::occupyUnit(int unitIndex) {
     glActiveTexture(unitIndex);
     glBindTexture(GL_TEXTURE_2D, this->textureID);

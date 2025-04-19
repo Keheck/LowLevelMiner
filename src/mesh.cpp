@@ -29,6 +29,12 @@ Mesh::Mesh(std::vector<Vertex> &vertexData, std::vector<unsigned int> &indices) 
     indexCount = indices.size();
 }
 
+Mesh::~Mesh() {
+    glDeleteBuffers(1, &(this->EBO));
+    glDeleteBuffers(1, &(this->VBO));
+    glDeleteVertexArrays(1, &(this->VAO));
+}
+
 void Mesh::bindArray() {
     glBindVertexArray(this->VAO);
 }
@@ -56,7 +62,7 @@ void Mesh::draw(Shader &shader) {
     int i = 0;
 
     for(auto keyValuePair : this->textures) {
-        keyValuePair.second.occupyUnit(GL_TEXTURE0+i);
+        keyValuePair.second->occupyUnit(GL_TEXTURE0+i);
         shader.setInt(keyValuePair.first.c_str(), i);
     }
     this->bindArray();

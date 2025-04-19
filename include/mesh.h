@@ -23,10 +23,11 @@ class Mesh {
     public:
         Mesh(std::vector<float> &data, std::vector<unsigned int> &indices);
         Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
+        ~Mesh();
         void bindArray();
         void setVertexData(int count, const VertexDataDescriptor *descriptors);
         void draw(Shader &shader);
-        std::map<std::string, Texture> textures;
+        std::map<std::string, Texture*> textures;
     private:
         unsigned int VAO, VBO, EBO;
         unsigned int indexCount;
