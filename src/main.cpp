@@ -156,31 +156,39 @@ int main(int, char**){
         {glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
         {glm::vec3(-0.5f,  0.5f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
         {glm::vec3( 0.5f,  0.5f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+
+        {glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3( 0.5f,  0.5f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+        {glm::vec3(-0.5f,  0.5f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
     };
 
     std::vector<unsigned int> billboardIndicies = {
         0, 1, 2,
-        1, 3, 2
+        1, 3, 2,
+
+        4, 5, 6,
+        5, 7, 6
     };
 
-    std::vector<glm::vec3> vegetation = {
-        glm::vec3(2.38f, -0.50f, -2.76f),
-        glm::vec3(3.17f, -0.50f, -3.10f),
-        glm::vec3(-3.44f, -0.50f, -3.00f),
-        glm::vec3(-0.39f, -0.50f, 0.67f),
-        glm::vec3(0.64f, -0.50f, -3.41f),
-        glm::vec3(3.47f, -0.50f, -1.69f),
-        glm::vec3(2.53f, -0.50f, -4.23f),
-        glm::vec3(-2.67f, -0.50f, -4.26f),
-        glm::vec3(-3.80f, -0.50f, 3.49f),
-        glm::vec3(0.96f, -0.50f, 1.04f),
+    std::vector<Transform> vegetation = {
+        {glm::vec3(2.38f, -0.50f, -2.76f)},
+        {glm::vec3(3.17f, -0.50f, -3.10f)},
+        {glm::vec3(-3.44f, -0.50f, -3.00f)},
+        {glm::vec3(-0.39f, -0.50f, 0.67f)},
+        {glm::vec3(0.64f, -0.50f, -3.41f)},
+        {glm::vec3(3.47f, -0.50f, -1.69f)},
+        {glm::vec3(2.53f, -0.50f, -4.23f)},
+        {glm::vec3(-2.67f, -0.50f, -4.26f)},
+        {glm::vec3(-3.80f, -0.50f, 3.49f)},
+        {glm::vec3(0.96f, -0.50f, 1.04f)},
     };
 
     std::vector<float> angles;
     srand(1);
 
     for(int i = 0; i < 10; i++) {
-        angles.push_back((float)rand()/RAND_MAX*3);
+        vegetation[i].mRotation = glm::angleAxis((float)rand()/RAND_MAX*3, glm::vec3(0.0f, 1.0f, 0.0f));
     }
 
     // glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, -5.0f);
@@ -225,9 +233,9 @@ int main(int, char**){
     
     glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
 
-    auto distanceSorter = [](glm::vec3 pos1, glm::vec3 pos2) {
-        float distance1 = glm::length(camera.position - pos1);
-        float distance2 = glm::length(camera.position - pos2);
+    auto distanceSorter = [](Transform transform1, Transform transform2) {
+        float distance1 = glm::length(camera.position - transform1.mPosition);
+        float distance2 = glm::length(camera.position - transform2.mPosition);
 
         return distance1 - distance2 > 0.0f;
     };
@@ -255,12 +263,8 @@ int main(int, char**){
 
         std::sort(vegetation.begin(), vegetation.end(), distanceSorter);
         
-        for(int i = 0; i < 10; i++) {
-            glm::vec3 grassPosition = vegetation[i];
-            float angle = angles[i];
-
-            billboardObject.mTransform.mPosition = grassPosition;
-            // billboardObject.mTransform.mRotation = glm::angleAxis(angle, glm::vec3(0.0f, 1.0f, 0.0f));
+        for(auto vegetationTransform : vegetation) {
+            billboardObject.mTransform = vegetationTransform;
             billboardObject.draw(unlitShader);
         }
         
