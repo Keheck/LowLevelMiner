@@ -13,8 +13,7 @@ class Camera {
         void walk(glm::vec3 direction);
         void rotate(float dYaw, float dPitch);
         glm::vec3 position;
-    private:
+        glm::vec3 forward, right, up;
         float pitch = 0;
         float yaw = 0;
-        glm::vec3 forward, right, up;
 };
