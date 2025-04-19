@@ -176,7 +176,7 @@ int main(int, char**){
         5, 7, 6
     };
 
-    std::vector<Transform> vegetation = {
+    std::vector<Transform> windowTransforms = {
         {glm::vec3(2.38f, -0.50f, -2.76f)},
         {glm::vec3(3.17f, -0.50f, -3.10f)},
         {glm::vec3(-3.44f, -0.50f, -3.00f)},
@@ -193,7 +193,7 @@ int main(int, char**){
     srand(1);
 
     for(int i = 0; i < 10; i++) {
-        vegetation[i].mRotation = glm::angleAxis((float)rand()/RAND_MAX*3, glm::vec3(0.0f, 1.0f, 0.0f));
+        windowTransforms[i].mRotation = glm::angleAxis((float)rand()/RAND_MAX*3, glm::vec3(0.0f, 1.0f, 0.0f));
     }
 
     std::vector<Vertex> screenVertices = {
@@ -214,8 +214,6 @@ int main(int, char**){
     
     Texture container("assets/textures/container.jpg");
     Texture concrete("assets/textures/concrete.jpg");
-    Texture marble("assets/textures/marble.jpg");
-    Texture grass("assets/textures/grass.png");
     Texture windowTexture("assets/textures/blending_transparent_window.png");
 
     Mesh cube = Mesh(cubeVertices, cubeIndices);
@@ -226,30 +224,19 @@ int main(int, char**){
     GameObject box1 = GameObject(cube, Transform(glm::vec3(1.0f, -0.5f, -1.5f)));
     GameObject box2 = GameObject(cube, Transform(glm::vec3(-1.5f, -0.5f, -2.0f)));
     GameObject billboardObject = GameObject(billboard);
-
-    // box1.setTexture("Albedo", container);
-    // box2.setTexture("Albedo", container);
-
     GameObject floor = GameObject(cube, Transform(glm::vec3(0.0f, -1.5f, 0.0f), glm::quat(1.0f, glm::vec3(0.0f)), glm::vec3(10.0f, 1.0f, 10.0f)));
-    // floor.setTexture("Albedo", concrete);
     
-    Shader litShader = Shader(&_vertex_default_shader, &_fragment_lit_shader);
     Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
-    Shader lightShader = Shader(&_vertex_light_shader, &_fragment_light_shader);
-    Shader depthVisualisation = Shader(&_vertex_default_shader, &_fragment_depth_vis_shader);
-    Shader outlineShader = Shader(&_vertex_default_shader, &_fragment_outline_shader);
     Shader screenShader = Shader(&_vertex_framebuffer_shader, &_fragment_framebuffer_shader);
 
-    outlineShader.use_shader();
-    outlineShader.setVec3f("outlineColor", 0.5f, 0.3f, 0.0f);
-    
     glEnable(GL_DEPTH_TEST);
+    
     glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
 
     auto distanceSorter = [](Transform transform1, Transform transform2) {
         float distance1 = glm::length(camera.position - transform1.mPosition);
@@ -289,6 +276,8 @@ int main(int, char**){
         
         process_input(window);
         
+        // ===========================
+        // RENDER SCENE TO FRAMEBUFFER
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -307,12 +296,15 @@ int main(int, char**){
         cube.textures["Albedo"] = &concrete;
         floor.draw(unlitShader);
 
-        std::sort(vegetation.begin(), vegetation.end(), distanceSorter);
+        std::sort(windowTransforms.begin(), windowTransforms.end(), distanceSorter);
         
-        for(auto vegetationTransform : vegetation) {
+        for(auto vegetationTransform : windowTransforms) {
             billboardObject.mTransform = vegetationTransform;
             billboardObject.draw(unlitShader);
         }
+
+        // ===========================
+        // RENDER FRAMEBUFFER TO SCENE
         
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
