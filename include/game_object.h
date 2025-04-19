@@ -27,7 +27,6 @@ class GameObject {
         void rotate(float angle, glm::vec3 axis);
         void scale(glm::vec3 scale);
         void draw(Shader &shader);
-        void setTexture(std::string textureName, Texture texture);
         Transform mTransform;
         Mesh &mMesh;
 };

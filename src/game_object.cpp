@@ -32,7 +32,3 @@ void GameObject::draw(Shader &shader) {
 
     transtack::pop_matrix();
 }
-
-void GameObject::setTexture(std::string textureName, Texture texture) {
-    this->mMesh.textures[textureName] = texture;
-}
