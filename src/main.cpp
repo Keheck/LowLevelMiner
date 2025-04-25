@@ -211,10 +211,9 @@ int main(int, char**){
     // glm::vec3 cubePosition = glm::vec3(0.0f, 0.0f, -5.0f);
     // glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, -3.0f);
     // glm::vec3 lightScale = glm::vec3(0.2f);
-    
     Texture container("assets/textures/container.jpg");
     Texture concrete("assets/textures/concrete.jpg");
-    Texture windowTexture("assets/textures/blending_transparent_window.png");
+    Texture windowTexture("assets/textures/window.png");
 
     Mesh cube = Mesh(cubeVertices, cubeIndices);
     Mesh billboard = Mesh(billboardVertices, billboardIndicies);
@@ -228,6 +227,7 @@ int main(int, char**){
     
     Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
     Shader screenShader = Shader(&_vertex_framebuffer_shader, &_fragment_framebuffer_shader);
+    Shader skyboxShader = Shader(&_vertex_skybox_shader, &_fragment_skybox_shader);
 
     glEnable(GL_DEPTH_TEST);
     
@@ -245,30 +245,39 @@ int main(int, char**){
         return distance1 - distance2 > 0.0f;
     };
 
-    unsigned int framebuffer;
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    unsigned int cubeMapTexture;
+    glGenTextures(1, &cubeMapTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);  
 
-    unsigned int colorbuffer;
-    glGenTextures(1, &colorbuffer);
-    glBindTexture(GL_TEXTURE_2D, colorbuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorbuffer, 0);
-    
-    unsigned int rbo;
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    std::vector<std::string> texture_faces = {
+        "assets/textures/right.jpg",
+        "assets/textures/left.jpg",
+        "assets/textures/top.jpg",
+        "assets/textures/bottom.jpg",
+        "assets/textures/front.jpg",
+        "assets/textures/back.jpg",
+    };
 
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "Framebuffer is incomplete!" << std::endl;
-        return 1;
+    int width, height, nrChannels;
+    unsigned char *data;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    stbi_set_flip_vertically_on_load(false);
+    for(unsigned int i = 0; i < texture_faces.size(); i++) {
+        data = stbi_load(texture_faces[i].c_str(), &width, &height, &nrChannels, 3);
+        if(!data) {
+            std::cout << "Failed to read cube map texture " << texture_faces[i] << std::endl;
+            stbi_image_free(data);
+        } else {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        }
     }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    stbi_set_flip_vertically_on_load(true);
     
     while(!glfwWindowShouldClose(window)) {
         deltaTime = glfwGetTime() - lastTime;
@@ -276,12 +285,8 @@ int main(int, char**){
         
         process_input(window);
         
-        // ===========================
-        // RENDER SCENE TO FRAMEBUFFER
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
 
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)WIDTH/HEIGHT, 0.1f, 100.0f);
@@ -298,27 +303,26 @@ int main(int, char**){
 
         std::sort(windowTransforms.begin(), windowTransforms.end(), distanceSorter);
         
+        glDisable(GL_CULL_FACE);
+        glDepthFunc(GL_LEQUAL);
+        skyboxShader.use_shader();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+        skyboxShader.setMat4f("view", glm::mat4(glm::mat3(view)));
+        skyboxShader.setMat4f("projection", projection);
+        skyboxShader.setInt("skybox", 0);
+        cube.draw(skyboxShader);
+        glDepthFunc(GL_LESS);
+        glEnable(GL_CULL_FACE);
+        
         for(auto vegetationTransform : windowTransforms) {
             billboardObject.mTransform = vegetationTransform;
             billboardObject.draw(unlitShader);
         }
 
-        // ===========================
-        // RENDER FRAMEBUFFER TO SCENE
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glDisable(GL_DEPTH_TEST);
-        glClear(GL_COLOR_BUFFER_BIT);
-        screenShader.use_shader();
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, colorbuffer);
-        screenShader.setInt("screenTexture", 0);
-        screen.draw(screenShader);
-        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteFramebuffers(1, &framebuffer);
     return 0;
 }

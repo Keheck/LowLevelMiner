@@ -9,6 +9,8 @@ set(SHADER_SOURCES
     fragment/outline.shader
     vertex/framebuffer.shader
     fragment/framebuffer.shader
+    fragment/skybox.shader
+    vertex/skybox.shader
 )
 
 set(SHADER_HEADERS "")
