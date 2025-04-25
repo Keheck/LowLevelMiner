@@ -35,29 +35,6 @@ Mesh::~Mesh() {
     glDeleteVertexArrays(1, &(this->VAO));
 }
 
-void Mesh::bindArray() {
-    glBindVertexArray(this->VAO);
-}
-
-void Mesh::setVertexData(int count, const VertexDataDescriptor* descriptors) {
-    int totalSize = 0;
-    for(int i = 0; i < count; i++)
-        totalSize += descriptors[i].numElements * descriptors[i].elementSize;
-    
-    glBindVertexArray(this->VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-
-    size_t currentOffset = 0;
-    for(unsigned int i = 0; i < count; i++) {
-        glVertexAttribPointer(i, descriptors[i].numElements, descriptors[i].type, GL_FALSE, totalSize, (void*)currentOffset);
-        currentOffset += descriptors[i].numElements * descriptors[i].elementSize;
-        glEnableVertexAttribArray(i);
-    }
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
 void Mesh::draw(Shader &shader) {
     int i = 0;
 
@@ -65,6 +42,6 @@ void Mesh::draw(Shader &shader) {
         keyValuePair.second->occupyUnit(GL_TEXTURE0+i);
         shader.setInt(keyValuePair.first.c_str(), i);
     }
-    this->bindArray();
+    glBindVertexArray(this->VAO);
     glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0);
 }

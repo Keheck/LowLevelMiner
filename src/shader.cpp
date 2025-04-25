@@ -93,8 +93,6 @@ Shader::Shader(const char **vertex_shader_source, const char **fragment_shader_s
     if(!success) {
         throw std::runtime_error("Shader compilation failed!");
     }
-
-    return;
 }
 
 Shader::~Shader() {

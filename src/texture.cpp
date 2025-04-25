@@ -21,7 +21,6 @@ Texture::Texture(const char *fileName) {
     glGetIntegerv(GL_ACTIVE_TEXTURE, &previousActive);
 
     glGenTextures(1, &(this->textureID));
-    glActiveTexture(GL_TEXTURE31);
     glBindTexture(GL_TEXTURE_2D, this->textureID);
 
     if(data) {
@@ -37,7 +36,6 @@ Texture::Texture(const char *fileName) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     stbi_image_free(data);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTexture(previousActive);
 }
 
 Texture::~Texture() {
