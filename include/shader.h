@@ -8,7 +8,7 @@ class Shader;
 
 class Shader {
     public:
-        Shader(const char **vertex_shader_source, const char **fragment_shader_source, const char **geometry_shader_source = NULL);
+        Shader(const char *vertex_shader_file, const char *fragment_shader_file, const char *geometry_shader_file = NULL);
         ~Shader();
         void use_shader();
         int getUniformLocation(const char* uniformName);

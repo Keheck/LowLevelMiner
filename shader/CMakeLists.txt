@@ -1,41 +1,26 @@
-set(SHADER_SOURCES
-    vertex/default.shader
-    fragment/mix.shader
-    fragment/lit.shader
-    fragment/light.shader
-    vertex/light.shader
-    fragment/unlit.shader
-    fragment/depth_vis.shader
-    fragment/outline.shader
-    vertex/framebuffer.shader
-    fragment/framebuffer.shader
-    fragment/skybox.shader
-    vertex/skybox.shader
+set(FRAGMENT_SHADERS
+    mix.shader
+    lit.shader
+    light.shader
+    unlit.shader
+    depth_vis.shader
+    outline.shader
+    framebuffer.shader
+    skybox.shader
 )
 
-set(SHADER_HEADERS "")
+set(VERTEX_SHADERS
+    default.shader
+    framebuffer.shader
+    light.shader
+    skybox.shader
+)
 
-function(register_shader SHADER)
-    set(SHADER_HEADER "${CMAKE_CURRENT_BINARY_DIR}/${SHADER}.h")
-    add_custom_command(OUTPUT "${SHADER_HEADER}"
-        COMMAND shdr2hdr "${CMAKE_CURRENT_SOURCE_DIR}/${SHADER}" "${SHADER_HEADER}" "$<MAKE_C_IDENTIFIER:${SHADER}>"
-        DEPENDS "${SHADER}" shdr2hdr
-        VERBATIM)
-endfunction()
-
-foreach(SHADER_FILE ${SHADER_SOURCES})
-    register_shader("${SHADER_FILE}")
-    list(APPEND SHADER_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/${SHADER_FILE}.h)
-endforeach()
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/vertex)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fragment)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/vertex)
 
-add_executable(shdr2hdr ${CMAKE_CURRENT_SOURCE_DIR}/embed_shader.cpp)
+list(TRANSFORM FRAGMENT_SHADERS PREPEND "fragment/")
+list(TRANSFORM VERTEX_SHADERS PREPEND "vertex/")
 
-list(TRANSFORM SHADER_SOURCES PREPEND "#include \"" OUTPUT_VARIABLE SHADER_INCLUDES)
-list(TRANSFORM SHADER_INCLUDES APPEND ".h\"\n")
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/shaders.h "#pragma once\n")
-file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/shaders.h ${SHADER_INCLUDES})
-
-add_custom_target(shaders DEPENDS ${SHADER_HEADERS})
+file(COPY ${FRAGMENT_SHADERS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/fragment)
+file(COPY ${VERTEX_SHADERS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/vertex)

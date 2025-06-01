@@ -10,7 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shader.h"
-#include "shaders.h"
 #include "stb_image.h"
 #include "texture.h"
 #include "mesh.h"
@@ -225,9 +224,9 @@ int main(int, char**){
     GameObject billboardObject = GameObject(billboard);
     GameObject floor = GameObject(cube, Transform(glm::vec3(0.0f, -1.5f, 0.0f), glm::quat(1.0f, glm::vec3(0.0f)), glm::vec3(10.0f, 1.0f, 10.0f)));
     
-    Shader unlitShader = Shader(&_vertex_default_shader, &_fragment_unlit_shader);
-    Shader screenShader = Shader(&_vertex_framebuffer_shader, &_fragment_framebuffer_shader);
-    Shader skyboxShader = Shader(&_vertex_skybox_shader, &_fragment_skybox_shader);
+    Shader unlitShader = Shader("shader/vertex/default.shader", "shader/fragment/unlit.shader");
+    Shader screenShader = Shader("shader/vertex/framebuffer.shader", "shader/fragment/framebuffer.shader");
+    Shader skyboxShader = Shader("shader/vertex/skybox.shader", "shader/fragment/skybox.shader");
 
     glEnable(GL_DEPTH_TEST);
     
