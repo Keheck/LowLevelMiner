@@ -241,7 +241,7 @@ int main(int, char**){
         float distance1 = glm::length(camera.position - transform1.mPosition);
         float distance2 = glm::length(camera.position - transform2.mPosition);
 
-        return distance1 - distance2 > 0.0f;
+        return distance1 > distance2;
     };
 
     unsigned int cubeMapTexture;
