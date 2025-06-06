@@ -48,4 +48,8 @@ steps may even be broken down into smaller steps
 * [X] Modify Build system to turn plain text shader code into C++ headers
 * [X] Get Textures working (replaces the triangle with a rectangle)
 * [X] Learn about transformations
-* [ ] Set up a rudimentary camera system
+* [X] Set up a rudimentary camera system
+* [ ] Make blocks
+* [ ] Create a chunking system
+* [ ] Implement a physics system for the player
+* [ ] Store chunks before they get unloaded
