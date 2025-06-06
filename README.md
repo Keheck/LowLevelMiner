@@ -20,7 +20,6 @@ Before building, you need to make sure that the following are installed:
 * A build system of your choice (My choice is Make)
 * A C++ compiler of your choice (My choice is GCC)
 * The GLFW library and development files
-* Maybe libx11?
 
 ### Debian
 
